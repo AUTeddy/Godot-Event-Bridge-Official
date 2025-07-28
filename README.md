@@ -1,4 +1,4 @@
-![Discord](https://img.shields.io/discord/1399270391226175518?link=https%3A%2F%2Fdiscord.gg%2FBhq7JdCE)
+![Discord](https://img.shields.io/discord/1399270391226175518?logo=discord)
 
 
 # EventBridge for Godot 4
