@@ -135,7 +135,33 @@ func _exit_tree():
 ---
 
 ## ✅ License
-MIT – Free to use in commercial and open-source projects.
+
+EventBridge Plugin Commercial License
+Version 1.0 – 2025
+
+Copyright (c) 2025 [Your Name or Company]
+
+Permission is granted to the purchaser to use the EventBridge plugin under the following terms:
+
+1. Grant of License
+You are granted a non-exclusive, non-transferable license to use this plugin in an unlimited number of personal and commercial projects.
+
+2. Allowed Uses
+- You may use the plugin in games or applications you develop for personal or commercial purposes.
+- You may modify the plugin for use within your own projects.
+
+3. Restrictions
+- Redistribution, resale, or sharing of the plugin source code (original or modified) is strictly prohibited.
+- You may not include the plugin in any public repository or open-source project without prior written permission.
+- You may not sublicense or repackage the plugin as part of another asset or product for distribution.
+
+4. Ownership
+This license does not grant ownership of the plugin. All rights, title, and interest remain with the copyright holder.
+
+5. Liability & Warranty
+The plugin is provided "as-is" without any warranties. The author is not liable for any damages arising from the use of the plugin.
+
+By purchasing or downloading this plugin, you agree to these terms.
 
 ---
 
