@@ -5,7 +5,7 @@ If you enjoy using Event-Bridge, please consider supporting my efforts with a do
 
 [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/M4M51IR6VN)
 
-
+---
 
 # EventBridge for Godot 4
 
