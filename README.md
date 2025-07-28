@@ -1,3 +1,7 @@
+!(images/eb1.png)
+
+
+
 # EventBridge for Godot 4
 [![Discord](https://img.shields.io/discord/1399270391226175518?style=for-the-badge&logo=discord)](https://discord.com/channels/1399270391226175518)
 [![Static Badge](https://img.shields.io/badge/Buy_on-itch.io-red?style=for-the-badge&logo=itchdotio&labelColor=black)](https://auteddy.itch.io)
