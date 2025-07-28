@@ -1,7 +1,10 @@
 ![Static Badge](https://img.shields.io/badge/any_text-Buy_it_here-red?style=for-the-badge&logo=itchdotio&label=itch.io&labelColor=black&link=https%3A%2F%2Fauteddy.itch.io)
 
+[![Static Badge](https://img.shields.io/badge/Buy_it_here-red?style=for-the-badge&logo=itchdotio&label=itch.io&labelColor=black)](https://auteddy.itch.io)
 
-![Discord](https://img.shields.io/discord/1399270391226175518?logo=discord) [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/M4M51IR6VN)
+
+![Discord](https://img.shields.io/discord/1399270391226175518?logo=discord) 
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/M4M51IR6VN)
 
 
 
