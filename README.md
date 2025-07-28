@@ -53,6 +53,10 @@ ns.remote("pong", ["Hello from client!"])
 ---
 
 ## ⚡ Quick Example Event Registry
+
+event_registry.json is automaticly generated based on your event bus tree in the editor plugin.
+event_data.tres can be copied ot a new project and you get all your events - no need to restart from scratch
+
 ```json
 {
   "Test": [
