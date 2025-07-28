@@ -157,3 +157,72 @@ If you enjoy using EventBridge, consider supporting my work:
 ---
 
 [![Static Badge](https://img.shields.io/badge/Buy_on-itch.io-red?style=for-the-badge&logo=itchdotio&labelColor=black)](https://auteddy.itch.io)
+
+✅ FAQ Section for README
+Q: Why not just use Godot signals?
+Godot signals are great for local communication between nodes. EventBridge shines when you need:
+
+Global events without wiring hundreds of connect() calls
+
+Cross-scene communication (UI ↔ Game Logic ↔ Network)
+
+Multiplayer-safe events with the same API as local events
+
+Q: Won’t an event bus make my code harder to debug?
+No—EventBridge improves debugging:
+
+Logs all connected handlers and emitted events
+
+Prevents duplicate signal connections
+
+Provides namespaces, so you know exactly where an event belongs
+
+Centralized registry (event_registry.json) for all global events
+
+Q: What about race conditions and unpredictable order?
+This is a valid concern for any event system. Godot signals already call listeners in an undefined order when multiple connections exist. EventBridge doesn’t make that worse—but:
+
+It enforces structure through namespaced events
+
+Lets you easily isolate events in logical groups
+
+Logs calls so you can trace execution order
+
+If you need strict deterministic order, you can always:
+
+Use explicit calls in critical code paths
+
+Or manage priority manually in your connected methods
+
+Q: Can I use EventBridge for collisions, animations, or local signals?
+No. Use Godot’s built-in signals for local, internal behavior. EventBridge is for:
+
+Global notifications
+
+UI updates
+
+Game state changes
+
+Multiplayer messaging
+
+Modular game systems
+
+Q: Is EventBridge thread-safe?
+EventBridge relies on Godot signals and RPC, which follow Godot’s main-thread execution model. For heavy threaded work, emit events from the main thread only or use call_deferred().
+
+Q: Does EventBridge introduce extra overhead?
+Minimal. It’s a thin wrapper on Godot’s signal system with caching for namespaces and automatic registry binding. The performance cost is negligible compared to the clarity and scalability it provides.
+
+✅ When NOT to Use EventBridge
+EventBridge is a tool for structured, global, and networked communication, not a universal replacement for signals. Avoid using EventBridge for:
+
+Internal object behavior
+(e.g., a projectile signaling its collision or an enemy triggering its own animation)
+
+High-frequency updates
+(e.g., physics signals like body_entered that fire every frame)
+
+Critical order-sensitive logic
+If you need guaranteed call order, use direct method calls or priority-based handlers.
+
+Instead, use Godot’s local signals or direct calls for these cases. EventBridge complements them by handling the bigger picture.
