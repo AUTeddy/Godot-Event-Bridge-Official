@@ -1,4 +1,4 @@
-![Discord](https://img.shields.io/discord/1399270391226175518?logo=discord)
+![Discord](https://img.shields.io/discord/1399270391226175518?logo=discord) [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/M4M51IR6VN)
 
 
 # EventBridge for Godot 4
