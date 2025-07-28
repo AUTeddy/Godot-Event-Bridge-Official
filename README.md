@@ -1,4 +1,4 @@
-!(images/eb1.png)
+!(./images/eb1.png)
 
 
 
