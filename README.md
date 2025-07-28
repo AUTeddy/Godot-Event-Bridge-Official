@@ -1,5 +1,4 @@
-!(./images/eb1.png)
-
+![](./images/eb1.png)
 
 
 # EventBridge for Godot 4
