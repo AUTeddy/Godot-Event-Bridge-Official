@@ -1,3 +1,5 @@
+![Static Badge](https://img.shields.io/badge/any_text-Buy_it_here-red?style=for-the-badge&logo=itchdotio&label=itch.io&labelColor=black&link=https%3A%2F%2Fauteddy.itch.io%2F)
+
 ![Discord](https://img.shields.io/discord/1399270391226175518?logo=discord) [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/M4M51IR6VN)
 
 <iframe frameborder="0" src="https://itch.io/embed/2552895" width="552" height="167"><a href="https://auteddy.itch.io/8-directions-render-plugin-for-blender">8 Directions Render Plugin for Blender by AUTeddy</a></iframe>
