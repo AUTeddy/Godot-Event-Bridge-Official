@@ -1,4 +1,4 @@
-[![Static Badge](https://img.shields.io/badge/Buy_it_here-red?style=for-the-badge&logo=itchdotio&label=itch.io&labelColor=black)](https://auteddy.itch.io)
+
 
 
 ![Discord](https://img.shields.io/discord/1399270391226175518?logo=discord) 
@@ -7,6 +7,8 @@
 
 
 # EventBridge for Godot 4
+
+[![Static Badge](https://img.shields.io/badge/Buy_it_here-red?style=for-the-badge&logo=itchdotio&label=itch.io&labelColor=black)](https://auteddy.itch.io)
 
 **EventBridge** is a lightweight event-driven communication system for Godot 4 that supports:
 - **Local and networked events**
