@@ -1,4 +1,4 @@
-<img alt="Static Badge" src="https://img.shields.io/badge/any_text-Buy_it_here-red?style=for-the-badge&logo=itchdotio&label=itch.io&labelColor=black&link=https%3A%2F%2Fauteddy.itch.io%2F">
+![Static Badge](https://img.shields.io/badge/any_text-Buy_it_here-red?style=for-the-badge&logo=itchdotio&label=itch.io&labelColor=black)](https://auteddy.itch.io)
 
 
 ![Static Badge](https://img.shields.io/badge/any_text-Buy_it_here-red?style=for-the-badge&logo=itchdotio&label=itch.io&labelColor=black&link=https%3A%2F%2Fauteddy.itch.io%2F)
