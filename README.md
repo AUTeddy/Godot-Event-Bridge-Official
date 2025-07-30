@@ -2,18 +2,21 @@
 
 <img src="./images/Godot_EventBridgeLogo.svg" />
 
-[![Discord](https://img.shields.io/discord/1399270391226175518?style=for-the-badge&logo=discord)](https://discord.com/channels/1399270391226175518)
 [![Static Badge](https://img.shields.io/badge/Buy_on-itch.io-red?style=for-the-badge&logo=itchdotio&labelColor=black)](https://auteddy.itch.io)
 [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/M4M51IR6VN)
 
+<br/>
+
+[![Discord](https://img.shields.io/discord/1399270391226175518?style=for-the-badge&logo=discord)](https://discord.com/channels/1399270391226175518)
 
 ## 🎯 EventBridge for Godot 4
 
 Stop wiring endless signals and RPCs. Start shipping structured multiplayer code today!
 
----
+<br/>
 
-🚀 What is EventBridge?
+## 🚀 What is EventBridge?
+
 EventBridge gives you a clean, scalable, and multiplayer-ready event-driven architecture for Godot 4.
 Perfect for single-player and multiplayer projects where managing signals and RPCs becomes chaos.
 
@@ -22,7 +25,7 @@ Perfect for single-player and multiplayer projects where managing signals and RP
 ✔ Editor Integration – Visual Event Registry & API refresh in one click
 ✔ One Source of Truth – All events live in event_registry.json
 
----
+<br/>
 
 ## ✅ Why Choose EventBridge?
 - **Local & Network Events** – One API for local, server, peer-specific, or broadcast events  
