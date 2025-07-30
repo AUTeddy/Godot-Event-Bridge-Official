@@ -74,6 +74,8 @@ ns.on("ping", func(msg):
 ns.remote("pong", ["Hello from client!"])
 ```
 
+## First steps
+Follow the Getting started guide to learn how to get started with EventBridge and the demo project.
 
 
 ## 📦 Installation
