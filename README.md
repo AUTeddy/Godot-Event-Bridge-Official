@@ -1,6 +1,6 @@
 <!--![](./images/eb1.png)-->
 
-<img src="./images/eb1.png" width="500" />
+<img src="./images/Godot_EventBridgeLogo.svg" width="500" />
 
 # EventBridge for Godot 4
 [![Discord](https://img.shields.io/discord/1399270391226175518?style=for-the-badge&logo=discord)](https://discord.com/channels/1399270391226175518)
