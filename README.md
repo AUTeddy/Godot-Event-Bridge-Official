@@ -180,10 +180,10 @@ func _exit_tree():
 ## 💖 Enjoy using Event Bridge? Please support development
 
 If you enjoy using EventBridge, consider supporting my work at Ko-Fi.
-Your support helps me keep improving and creating more useful tools for the Godot community. 😊
-  <a href="https://ko-fi.com/M4M51IR6VN" target="_blank">
-    <img src="https://img.shields.io/badge/Support_me_on_Ko_Fi-blue?style=for-the-badge&logo=kofi&label=%20&labelColor=%23000&color=%23000" alt="Ko-fi" />
-  </a>
+Your support helps me keep improving and creating more useful tools for the Godot community. 😊 <br/><br/>
+<a href="https://ko-fi.com/M4M51IR6VN" target="_blank">
+  <img src="https://img.shields.io/badge/Support_me_on_Ko_Fi-blue?style=for-the-badge&logo=kofi&label=%20&labelColor=%23000&color=%23000" alt="Ko-fi" />
+</a>
 
 ---
 
