@@ -9,6 +9,13 @@
 
 [![Discord](https://img.shields.io/discord/1399270391226175518?style=for-the-badge&logo=discord)](https://discord.com/channels/1399270391226175518)
 
+<br/>
+
+![Static Badge](https://img.shields.io/badge/godot-v4-black?style=for-the-badge&logo=godotengine)
+![Static Badge](https://img.shields.io/badge/godot-GDScript-black?style=for-the-badge&logo=godotengine)
+
+
+
 ## 🎯 EventBridge for Godot 4
 
 Stop wiring endless signals and RPCs. Start shipping structured multiplayer code today!
