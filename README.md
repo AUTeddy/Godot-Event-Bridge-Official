@@ -1,9 +1,9 @@
 <img src="./images/Godot_EventBridgeLogo.svg" />
 <p align="center">
-  <a href="https://auteddy.itch.io">
+  <a href="https://auteddy.itch.io" target="_blank">
     <img src="https://img.shields.io/badge/Buy_on-itch.io-red?style=for-the-badge&logo=itchdotio&labelColor=black" alt="Buy on itch.io" />
   </a>
-  <a href="https://ko-fi.com/M4M51IR6VN">
+  <a href="https://ko-fi.com/M4M51IR6VN" target="_blank">
     <img src="https://img.shields.io/badge/Support_me_on_Ko_Fi-blue?style=for-the-badge&logo=kofi&label=%20&labelColor=%23000&color=%23000" alt="Ko-fi" />
   </a>
 </p>
@@ -15,7 +15,7 @@
   <img src="https://img.shields.io/badge/godot-RPC-green?style=for-the-badge&logo=godotengine&color=%23008C3C" alt="Godot RPC" />
 </p>
 <p align="center">
-  <a href="https://discord.com/channels/1399270391226175518">
+  <a href="https://discord.com/channels/1399270391226175518" target="_blank">
     <img src="https://img.shields.io/discord/1399270391226175518?style=for-the-badge&logo=discord" alt="Discord Chat" />
   </a>
 </p>
