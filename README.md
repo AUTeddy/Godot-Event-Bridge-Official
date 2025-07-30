@@ -1,16 +1,12 @@
-<!--![](./images/eb1.png)-->
-
 <img src="./images/Godot_EventBridgeLogo.svg" />
-
 <p align="center">
   <a href="https://auteddy.itch.io">
     <img src="https://img.shields.io/badge/Buy_on-itch.io-red?style=for-the-badge&logo=itchdotio&labelColor=black" alt="Buy on itch.io" />
   </a>
   <a href="https://ko-fi.com/M4M51IR6VN">
-    <img src="https://ko-fi.com/img/githubbutton_sm.svg" alt="Ko-fi" />
+    <img src="https://img.shields.io/badge/Support_me_on_Ko_Fi-blue?style=for-the-badge&logo=kofi&label=%20&labelColor=%23000&color=%23000" alt="Ko-fi" />
   </a>
 </p>
-
 <p align="center">
   <img src="https://img.shields.io/badge/godot-v4-black?style=for-the-badge&logo=godotengine" alt="Godot V4" />
   <img src="https://img.shields.io/badge/godot-Editor_Plugin-blue?style=for-the-badge&logo=godotengine&color=%23000000" alt="Godot Editor Plugin" />
@@ -18,7 +14,6 @@
   <img src="https://img.shields.io/badge/godot-Signals-blue?style=for-the-badge&logo=godotengine&color=%233176BB" alt="Godot Signals" />
   <img src="https://img.shields.io/badge/godot-RPC-green?style=for-the-badge&logo=godotengine&color=%23008C3C" alt="Godot RPC" />
 </p>
-
 <p align="center">
   <a href="https://discord.com/channels/1399270391226175518">
     <img src="https://img.shields.io/discord/1399270391226175518?style=for-the-badge&logo=discord" alt="Discord Chat" />
