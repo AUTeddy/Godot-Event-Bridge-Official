@@ -12,7 +12,13 @@
 <br/>
 
 ![Static Badge](https://img.shields.io/badge/godot-v4-black?style=for-the-badge&logo=godotengine)
-![Static Badge](https://img.shields.io/badge/godot-GDScript-black?style=for-the-badge&logo=godotengine)
+![Static Badge](https://img.shields.io/badge/godot-Editor_Plugin-blue?style=for-the-badge&logo=godotengine&color=%23000000)
+![Static Badge](https://img.shields.io/badge/godot-in_GDScript-black?style=for-the-badge&logo=godotengine)
+![Static Badge](https://img.shields.io/badge/godot-Signals-blue?style=for-the-badge&logo=godotengine&color=%233176BB)
+![Static Badge](https://img.shields.io/badge/godot-RPC-green?style=for-the-badge&logo=godotengine&color=%23008C3C)
+
+
+
 
 
 
