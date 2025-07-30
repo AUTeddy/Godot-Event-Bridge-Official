@@ -1,4 +1,6 @@
-<img src="./images/Godot_EventBridgeLogo.svg" />
+<a href="https://auteddy.itch.io" target="_blank">
+  <img src="./images/Godot_EventBridgeLogo.svg" />
+</a>
 <p align="center">
   <a href="https://auteddy.itch.io" target="_blank">
     <img src="https://img.shields.io/badge/Buy_on-itch.io-red?style=for-the-badge&logo=itchdotio&labelColor=black" alt="Buy on itch.io" />
