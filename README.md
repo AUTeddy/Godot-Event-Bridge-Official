@@ -1,6 +1,9 @@
 <a href="https://auteddy.itch.io" target="_blank">
   <img src="./images/Godot_EventBridgeLogo.svg" />
 </a>
+
+---
+
 <p align="center">
   <a href="https://auteddy.itch.io" target="_blank">
     <img src="https://img.shields.io/badge/Buy_on-itch.io-red?style=for-the-badge&logo=itchdotio&labelColor=black" alt="Buy on itch.io" />
@@ -19,6 +22,8 @@
     <img src="https://img.shields.io/discord/1399270391226175518?style=for-the-badge&logo=discord" alt="Discord Chat" />
   </a>
 </p>
+
+---
 
 ## 🎯 EventBridge for Godot 4
 
@@ -41,6 +46,7 @@ Perfect for single-player and multiplayer projects where managing signals and RP
 <br/>
 
 ## ✅ Why Choose EventBridge?
+
 - **Local & Network Events** – One API for local, server, peer-specific, or broadcast events  
 - **Namespaces for Organization** – Keep events modular and maintainable  
 - **Automatic Event Registry** – Define once, reuse everywhere  
@@ -49,7 +55,7 @@ Perfect for single-player and multiplayer projects where managing signals and RP
 - **Persistent Caching** – Fast lookups even for large projects  
 - **One-Line Cleanup** – `off_all()` removes dangling handlers instantly  
 
----
+
 
 ## 🎮 Perfect for Multiplayer
 Send events:
@@ -68,7 +74,7 @@ ns.on("ping", func(msg):
 ns.remote("pong", ["Hello from client!"])
 ```
 
----
+
 
 ## 📦 Installation
 1. Copy the **`addons/event_bridge`** folder into your Godot project  
@@ -77,7 +83,7 @@ ns.remote("pong", ["Hello from client!"])
    - Name: `EventBridge`
    - Path: `res://addons/event_bridge/event_bus.gd`  
 
----
+
 
 ## ⚡ Quick Example Event Registry
 
@@ -101,7 +107,6 @@ event_data.tres can be copied ot a new project and you get all your events - no 
 }
 ```
 
----
 
 ## 🛠 Usage
 ### 1. Get a Namespace
@@ -130,7 +135,7 @@ func _exit_tree():
     ns.off_all()
 ```
 
----
+
 
 ## 🔑 Full API
 | Method                  | Description                                    |
@@ -144,38 +149,34 @@ func _exit_tree():
 | `to_id(id, event, args)`| Emit to a specific peer                       |
 | `off_all()`             | Remove all handlers in this namespace         |
 
----
+
 
 ## 📢 Example Output
 ```
-[EventBridge] Loaded registry from: res://addons/event_bridge/event_registry.json
-[EventBridge] EventBus initialized with namespaces: ["Test"]
-[EventBridge] Connected handler for Test::ping
-[EventBridge] Emit to all: Test::ping ["Hello from SERVER"]
-[CLIENT] PING received: Hello from SERVER
-[SERVER] PONG received from client: Hello back from CLIENT 123456789
+[EventBridge] SOME CONSOLE PRINT HERE
+
 ```
 
----
+
 
 ## 📄 License
 **EventBridge Plugin Commercial License** (included in package):  
 ✔ Use in unlimited projects (personal & commercial)  
 ❌ No redistribution or resale  
 
----
+
 
 ## 🛣 Roadmap
 - [ ] GUI editor for event registry  
 - [ ] Argument validation on emit  
 - [ ] Type hints for callable arguments  
 
----
+
 
 ## 💬 Join the Community
 [![Discord](https://img.shields.io/discord/1399270391226175518?style=for-the-badge&logo=discord)](https://discord.com/channels/1399270391226175518)
 
----
+
 
 ## 💖 Enjoy using Event Bridge? Please support development
 
@@ -185,75 +186,9 @@ Your support helps me keep improving and creating more useful tools for the Godo
   <img src="https://img.shields.io/badge/Support_me_on_Ko_Fi-blue?style=for-the-badge&logo=kofi&label=%20&labelColor=%23000&color=%23000" alt="Ko-fi" />
 </a>
 
----
+
 
 [![Static Badge](https://img.shields.io/badge/Buy_on-itch.io-red?style=for-the-badge&logo=itchdotio&labelColor=black)](https://auteddy.itch.io)
 
-✅ FAQ Section for README
-Q: Why not just use Godot signals?
-Godot signals are great for local communication between nodes. EventBridge shines when you need:
+## ✅ FAQ Section for README
 
-Global events without wiring hundreds of connect() calls
-
-Cross-scene communication (UI ↔ Game Logic ↔ Network)
-
-Multiplayer-safe events with the same API as local events
-
-Q: Won’t an event bus make my code harder to debug?
-No—EventBridge improves debugging:
-
-Logs all connected handlers and emitted events
-
-Prevents duplicate signal connections
-
-Provides namespaces, so you know exactly where an event belongs
-
-Centralized registry (event_registry.json) for all global events
-
-Q: What about race conditions and unpredictable order?
-This is a valid concern for any event system. Godot signals already call listeners in an undefined order when multiple connections exist. EventBridge doesn’t make that worse—but:
-
-It enforces structure through namespaced events
-
-Lets you easily isolate events in logical groups
-
-Logs calls so you can trace execution order
-
-If you need strict deterministic order, you can always:
-
-Use explicit calls in critical code paths
-
-Or manage priority manually in your connected methods
-
-Q: Can I use EventBridge for collisions, animations, or local signals?
-No. Use Godot’s built-in signals for local, internal behavior. EventBridge is for:
-
-Global notifications
-
-UI updates
-
-Game state changes
-
-Multiplayer messaging
-
-Modular game systems
-
-Q: Is EventBridge thread-safe?
-EventBridge relies on Godot signals and RPC, which follow Godot’s main-thread execution model. For heavy threaded work, emit events from the main thread only or use call_deferred().
-
-Q: Does EventBridge introduce extra overhead?
-Minimal. It’s a thin wrapper on Godot’s signal system with caching for namespaces and automatic registry binding. The performance cost is negligible compared to the clarity and scalability it provides.
-
-✅ When NOT to Use EventBridge
-EventBridge is a tool for structured, global, and networked communication, not a universal replacement for signals. Avoid using EventBridge for:
-
-Internal object behavior
-(e.g., a projectile signaling its collision or an enemy triggering its own animation)
-
-High-frequency updates
-(e.g., physics signals like body_entered that fire every frame)
-
-Critical order-sensitive logic
-If you need guaranteed call order, use direct method calls or priority-based handlers.
-
-Instead, use Godot’s local signals or direct calls for these cases. EventBridge complements them by handling the bigger picture.
