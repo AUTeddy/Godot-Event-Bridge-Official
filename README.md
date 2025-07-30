@@ -5,9 +5,7 @@
   <a href="https://auteddy.itch.io" target="_blank">
     <img src="https://img.shields.io/badge/Buy_on-itch.io-red?style=for-the-badge&logo=itchdotio&labelColor=black" alt="Buy on itch.io" />
   </a>
-  <a href="https://ko-fi.com/M4M51IR6VN" target="_blank">
-    <img src="https://img.shields.io/badge/Support_me_on_Ko_Fi-blue?style=for-the-badge&logo=kofi&label=%20&labelColor=%23000&color=%23000" alt="Ko-fi" />
-  </a>
+  <a href='https://ko-fi.com/M4M51IR6VN' target='_blank'><img height='36' style='border:0px;height:36px;' src='https://storage.ko-fi.com/cdn/kofi3.png?v=6' border='0' alt='Buy Me a Coffee at ko-fi.com' /></a>
 </p>
 <p align="center">
   <img src="https://img.shields.io/badge/godot-Editor_Plugin-blue?style=for-the-badge&logo=godotengine&color=%23000000" alt="Godot Editor Plugin" />
@@ -177,9 +175,11 @@ func _exit_tree():
 
 ---
 
-### ❤️ Support Development
-If you enjoy using EventBridge, consider supporting my work:  
-[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/M4M51IR6VN)
+## 💖 Enjoy using Event Bridge? Please support development
+
+If you enjoy using EventBridge, consider supporting my work at Ko-Fi.
+Your support helps me keep improving and creating more useful tools for the Godot community. 😊
+<a href='https://ko-fi.com/M4M51IR6VN' target='_blank'><img height='36' style='border:0px;height:36px;' src='https://storage.ko-fi.com/cdn/kofi3.png?v=6' border='0' alt='Buy Me a Coffee at ko-fi.com' /></a>
 
 ---
 
