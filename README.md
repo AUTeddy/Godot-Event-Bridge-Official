@@ -10,9 +10,7 @@
   </a>
 </p>
 <p align="center">
-  <img src="https://img.shields.io/badge/godot-v4-black?style=for-the-badge&logo=godotengine" alt="Godot V4" />
   <img src="https://img.shields.io/badge/godot-Editor_Plugin-blue?style=for-the-badge&logo=godotengine&color=%23000000" alt="Godot Editor Plugin" />
-  <img src="https://img.shields.io/badge/godot-in_GDScript-black?style=for-the-badge&logo=godotengine" alt="Godot GDScript" />
   <img src="https://img.shields.io/badge/godot-Signals-blue?style=for-the-badge&logo=godotengine&color=%233176BB" alt="Godot Signals" />
   <img src="https://img.shields.io/badge/godot-RPC-green?style=for-the-badge&logo=godotengine&color=%23008C3C" alt="Godot RPC" />
 </p>
@@ -22,18 +20,11 @@
   </a>
 </p>
 
-
-
-
-
-
-
-
-
-
 ## 🎯 EventBridge for Godot 4
 
-Stop wiring endless signals and RPCs. Start shipping structured multiplayer code today!
+<blockquote>
+<p dir="auto"><strong>🛈 Supported Godot Engine:</strong>  <strong>4.4</strong></p>
+</blockquote>
 
 <br/>
 
