@@ -2,20 +2,32 @@
 
 <img src="./images/Godot_EventBridgeLogo.svg" />
 
-[![Static Badge](https://img.shields.io/badge/Buy_on-itch.io-red?style=for-the-badge&logo=itchdotio&labelColor=black)](https://auteddy.itch.io)
-[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/M4M51IR6VN)
+<p align="center">
+  <a href="https://auteddy.itch.io">
+    <img src="https://img.shields.io/badge/Buy_on-itch.io-red?style=for-the-badge&logo=itchdotio&labelColor=black" alt="Buy on itch.io" />
+  </a>
+  <a href="https://ko-fi.com/M4M51IR6VN">
+    <img src="https://ko-fi.com/img/githubbutton_sm.svg" alt="Ko-fi" />
+  </a>
+</p>
 
-<br/>
+<p align="center">
+  <img src="https://img.shields.io/badge/godot-v4-black?style=for-the-badge&logo=godotengine" alt="Godot V4" />
+  <img src="https://img.shields.io/badge/godot-Editor_Plugin-blue?style=for-the-badge&logo=godotengine&color=%23000000" alt="Godot Editor Plugin" />
+  <img src="https://img.shields.io/badge/godot-in_GDScript-black?style=for-the-badge&logo=godotengine" alt="Godot GDScript" />
+  <img src="https://img.shields.io/badge/godot-Signals-blue?style=for-the-badge&logo=godotengine&color=%233176BB" alt="Godot Signals" />
+  <img src="https://img.shields.io/badge/godot-RPC-green?style=for-the-badge&logo=godotengine&color=%23008C3C" alt="Godot RPC" />
+</p>
 
-[![Discord](https://img.shields.io/discord/1399270391226175518?style=for-the-badge&logo=discord)](https://discord.com/channels/1399270391226175518)
+<p align="center">
+  <a href="https://discord.com/channels/1399270391226175518">
+    <img src="https://img.shields.io/discord/1399270391226175518?style=for-the-badge&logo=discord" alt="Discord Chat" />
+  </a>
+</p>
 
-<br/>
 
-![Static Badge](https://img.shields.io/badge/godot-v4-black?style=for-the-badge&logo=godotengine)
-![Static Badge](https://img.shields.io/badge/godot-Editor_Plugin-blue?style=for-the-badge&logo=godotengine&color=%23000000)
-![Static Badge](https://img.shields.io/badge/godot-in_GDScript-black?style=for-the-badge&logo=godotengine)
-![Static Badge](https://img.shields.io/badge/godot-Signals-blue?style=for-the-badge&logo=godotengine&color=%233176BB)
-![Static Badge](https://img.shields.io/badge/godot-RPC-green?style=for-the-badge&logo=godotengine&color=%23008C3C)
+
+
 
 
 
