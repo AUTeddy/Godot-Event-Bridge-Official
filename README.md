@@ -194,3 +194,24 @@ Your support helps me keep improving and creating more useful tools for the Godo
 
 ## ✅ FAQ Section for README
 
+## License
+
+Event Bridge Plugin - Custom License
+Copyright (c) 2025 AUTeddy/ Edis Hobl-Zunic
+
+Permission is granted to the purchaser to:
+- Use this plugin in personal and commercial Godot Engine projects.
+- Modify the plugin for use in their own projects.
+
+Restrictions:
+- You may NOT distribute, share, or resell the plugin in its original or modified form.
+- You may NOT include this plugin in any asset packs or templates for sale or free distribution.
+- You may NOT claim ownership of the original code or remove copyright notices.
+
+Liability:
+This plugin is provided "as-is" without any warranties or guarantees. The author is not responsible for any issues or damages that may occur from using this software.
+
+By using this plugin, you agree to these terms.
+
+
+
