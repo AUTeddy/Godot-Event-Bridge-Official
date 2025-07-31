@@ -19,6 +19,8 @@ func ping(msg: String):
     print("PING:", msg)
 
 rpc_id(1, "ping", "Hello from client!")
+```
+
 This approach becomes difficult to maintain as projects scale.
 
 EventBridge Solution
@@ -152,12 +154,18 @@ addons/
     ├── event_bridge.gd# Plugin entry point
 docs/
 images/
-✅ External References
-Godot MultiplayerAPI
 
-Godot MultiplayerAPIExtension
+### ✅ External References
 
-Godot EditorPlugin API
+1. **Godot MultiplayerAPI**  
+   [https://docs.godotengine.org/en/stable/classes/class_multiplayerapi.html](https://docs.godotengine.org/en/stable/classes/class_multiplayerapi.html)
+
+2. **Godot MultiplayerAPIExtension**  
+   [https://docs.godotengine.org/en/stable/classes/class_multiplayerapiextension.html](https://docs.godotengine.org/en/stable/classes/class_multiplayerapiextension.html)
+
+3. **Godot EditorPlugin API**  
+   [https://docs.godotengine.org/en/stable/classes/class_editorplugin.html](https://docs.godotengine.org/en/stable/classes/class_editorplugin.html)
+
 
 ✅ About Me
 I built EventBridge to solve recurring pain points in Godot networking:
