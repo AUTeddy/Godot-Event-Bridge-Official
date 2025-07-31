@@ -25,12 +25,11 @@ How Validators Work
 Naming Convention:
 For any event my_event, define a function:
 
-gdscript
-Copy
-Edit
+```gdscript
 func validate_my_event(args: Array) -> bool:
     # Return true to allow, false to block
 EventBridge automatically calls this validator (if present) on incoming RPC events before they trigger signals or game logic.
+```
 
 Validators run on the receiving peer (usually the server for authority-controlled events).
 
@@ -41,37 +40,31 @@ Sent by clients to the server to roll a dice.
 
 Validator Implementation (on server):
 
-gdscript
-Copy
-Edit
+```gdscript
 func validate_request_roll(args: Array) -> bool:
     # Clients shouldn't send arguments for this event
     if args.size() > 0:
         print("Validator: Invalid arguments for request_roll")
         return false
     return true
-If a hacked client tries:
 
-gdscript
-Copy
-Edit
+#If a hacked client tries:
+
 EventManager.request_roll("give_me_100_points")
-→ Blocked by validator, logged as:
+# → Blocked by validator, logged as:
+```
 
-csharp
-Copy
-Edit
+```gdscript
 Validation failed for event 'request_roll'. Ignored.
 ✅ Example: Secure Chat
 Event: send_chat_message
 
 Args: [player_id: int, message: String]
+```
 
 Validator Implementation:
 
-gdscript
-Copy
-Edit
+```gdscript
 func validate_send_chat_message(args: Array) -> bool:
     var player_id = args[0]
     var message = args[1]
@@ -82,6 +75,8 @@ func validate_send_chat_message(args: Array) -> bool:
     if message.begins_with("/kick"):
         return false # Prevent abuse of chat commands
     return true
+```
+    
 Where Validators Live
 Add them in EventManager.gd (the generated file) or in a script that extends it.
 
@@ -111,10 +106,12 @@ Set Transfer Mode = unreliable_ordered.
 
 Assign a dedicated channel (avoid sharing with other events).
 
+```gdscript
 Channel Safety
 Godot supports multiple ENet channels for parallel streams of events.
 Rule:
 When using unreliable_ordered, do NOT mix different event types on the same channel, or packets for one event may drop packets for another.
+```
 
 EventBridge helps you by:
 
@@ -123,21 +120,19 @@ UI Warning: In the Event Dock if multiple events share the same channel.
 Runtime Warning: Logs conflicts during execution.
 
 ✅ Bad Example (Will cause dropped packets):
-scss
-Copy
-Edit
+```gdscript
 Channel 0 → player_position_update (unreliable_ordered)
 Channel 0 → enemy_spawn (reliable)
 If enemy_spawn arrives after a position update, it might block future updates.
+```
 
 ✅ Good Example:
-scss
-Copy
-Edit
+```gdscript
 Channel 0 → player_position_update (unreliable_ordered)
 Channel 1 → enemy_spawn (reliable)
 Developer Workflow Summary
 Create Events in Event Dock.
+```
 
 Assign transfer modes:
 
@@ -160,10 +155,10 @@ Anti-cheat checks	attack_enemy	Reject if enemy_id is invalid
 Limit spam	send_chat_message	Reject if too many messages/sec
 Security enforcement	kick_client	Reject if caller is not admin
 
-✅ With validators + proper transfer mode configuration, EventBridge now provides both performance and security for multiplayer Godot games.
+## ✅ With validators + proper transfer mode configuration, EventBridge now provides both performance and security for multiplayer Godot games.
 
 
-✅ 1. Real-World Validator Implementation (validators.gd)
+## ✅ 1. Real-World Validator Implementation (validators.gd)
 Create this as an autoload or attach it to your main game node.
 
 ```gdscript
