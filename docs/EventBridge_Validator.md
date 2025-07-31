@@ -166,9 +166,8 @@ Security enforcement	kick_client	Reject if caller is not admin
 ✅ 1. Real-World Validator Implementation (validators.gd)
 Create this as an autoload or attach it to your main game node.
 
-gdscript
-Copy
-Edit
+```gdscript
+
 # File: res://scripts/validators.gd
 extends Node
 
@@ -223,6 +222,8 @@ func validate_chat_spam(args: Array) -> bool:
         return false
     last_message_time[player_id] = now
     return true
+```
+
 ✅ How It Works:
 Each function follows the auto-naming pattern:
 validate_<event_name>(args: Array) -> bool
@@ -234,9 +235,7 @@ Print messages for debugging (can later replace with logs or telemetry).
 ✅ 2. Event Flow Diagram
 Here’s a clear diagram of how validation fits into the event system:
 
-scss
-Copy
-Edit
+```
 Client (EventManager API) ──► EventBus Autoload ──► RPC System ──► EventBus (Receiving Peer)
                                                                   │
                                                                   ▼
@@ -246,6 +245,8 @@ Client (EventManager API) ──► EventBus Autoload ──► RPC System ─�
                                     │ YES (Valid)                                             │ NO (Invalid)
                                     ▼                                                        ▼
                             emit_signal(event_name, args)                        Block event, log warning
+```
+
 Key Points
 Validation only happens on the receiving side (usually the server for authority).
 
