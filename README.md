@@ -213,5 +213,10 @@ This plugin is provided "as-is" without any warranties or guarantees. The author
 
 By using this plugin, you agree to these terms.
 
+## 📘 Configuration Rules
+For detailed configuration rules, valid combinations, and auto-correction logic:
+👉 [Read the Full Guide](docs/CONFIG_RULES.md)
+
+![Preview](docs/images/eventbridge_auto_correction_flowchart.png)
 
 
