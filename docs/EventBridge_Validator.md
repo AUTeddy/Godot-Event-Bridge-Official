@@ -161,3 +161,107 @@ Limit spam	send_chat_message	Reject if too many messages/sec
 Security enforcement	kick_client	Reject if caller is not admin
 
 ✅ With validators + proper transfer mode configuration, EventBridge now provides both performance and security for multiplayer Godot games.
+
+
+✅ 1. Real-World Validator Implementation (validators.gd)
+Create this as an autoload or attach it to your main game node.
+
+gdscript
+Copy
+Edit
+# File: res://scripts/validators.gd
+extends Node
+
+# === Security & Anti-Cheat Validators for EventBridge ===
+# These are examples you can modify for your game.
+
+# 1. Prevent invalid dice roll requests
+func validate_request_roll(args: Array) -> bool:
+    # Clients should not send any arguments for this event
+    if args.size() > 0:
+        print("[Validator] request_roll rejected: unexpected args")
+        return false
+    return true
+
+# 2. Prevent invalid dice results (server sending to clients)
+func validate_dice_result(args: Array) -> bool:
+    var result = args[0] if args.size() > 0 else null
+    # Only allow numbers between 1 and 6
+    if result == null or result < 1 or result > 6:
+        print("[Validator] dice_result rejected: invalid value")
+        return false
+    return true
+
+# 3. Prevent unauthorized kick
+func validate_kick_client(args: Array) -> bool:
+    var msg = args[0]
+    # Only allow this event from server authority
+    if !get_tree().is_network_server():
+        print("[Validator] kick_client rejected: unauthorized peer")
+        return false
+    return true
+
+# 4. Secure chat system
+func validate_send_chat_message(args: Array) -> bool:
+    if args.size() != 2:
+        return false
+    var message = args[1]
+    if message.length() > 200:
+        return false
+    if message.begins_with("/kick"):
+        return false # Disallow dangerous commands in chat
+    return true
+
+# 5. Rate limit example (anti-spam)
+var last_message_time := {}
+const CHAT_COOLDOWN = 1.0 # seconds
+func validate_chat_spam(args: Array) -> bool:
+    var player_id = str(args[0])
+    var now = Time.get_unix_time_from_system()
+    if last_message_time.has(player_id) and now - last_message_time[player_id] < CHAT_COOLDOWN:
+        print("[Validator] Player %s spam detected" % player_id)
+        return false
+    last_message_time[player_id] = now
+    return true
+✅ How It Works:
+Each function follows the auto-naming pattern:
+validate_<event_name>(args: Array) -> bool
+
+Return true to allow, false to block.
+
+Print messages for debugging (can later replace with logs or telemetry).
+
+✅ 2. Event Flow Diagram
+Here’s a clear diagram of how validation fits into the event system:
+
+scss
+Copy
+Edit
+Client (EventManager API) ──► EventBus Autoload ──► RPC System ──► EventBus (Receiving Peer)
+                                                                  │
+                                                                  ▼
+                                                          EventManager._validate_event()
+                                                                  │
+                                    ┌─────────────────────────────┴────────────────────────────┐
+                                    │ YES (Valid)                                             │ NO (Invalid)
+                                    ▼                                                        ▼
+                            emit_signal(event_name, args)                        Block event, log warning
+Key Points
+Validation only happens on the receiving side (usually the server for authority).
+
+If a validator exists and returns false, the event is ignored.
+
+If no validator exists, the event is allowed by default.
+
+✅ 3. Developer Best Practices
+Always add validators for:
+
+Events targeting the server (to_server).
+
+Events that modify critical game state (e.g., score updates, item trades).
+
+Use rate limiting for spam-prone events like chat or emotes.
+
+Keep validators lightweight—they run in the network loop.
+
+Combine validators with server authority checks for extra security.
