@@ -169,12 +169,40 @@ func validate_send_chat_message(args: Array) -> bool:
     return true
 ```
     
-Where Validators Live
-Add them in EventManager.gd (the generated file) or in a script that extends it.
+## Where Validators Live
+Add them in event_validators.gd (autoload folder) or in a script that extends it.
 
 They must not modify the args; they only approve or reject.
 
-Transfer Modes Explained
+
+Option 1: In EventManager.gd directly (recommended for small projects)
+
+```gdscript
+func validate_request_roll(args: Array) -> bool:
+    return args.size() == 0
+```
+
+Option 2: In event_validators.gd by extending EventManager
+For large projects, keep validators separate for clean code:
+
+```gdscript
+# File: res://autoload/event_validators.gd
+extends EventManager
+
+func validate_request_roll(args: Array) -> bool:
+    return args.size() == 0
+
+func validate_kick_client(args: Array) -> bool:
+    return get_tree().is_network_server() # Only server can process
+Why this works:
+EventManager._validate_event() uses has_method() and call().
+```
+
+If your autoload instance is event_validators.gd and it extends EventManager,
+then has_method("validate_request_roll") will return true, and it runs your custom code.
+
+
+## Transfer Modes Explained
 EventBridge supports three transfer modes:
 
 reliable – Guaranteed delivery, ordered (default).
