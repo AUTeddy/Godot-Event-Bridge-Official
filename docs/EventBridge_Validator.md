@@ -1,55 +1,63 @@
-EventBridge Validator & Networking Best Practices
-Overview
+# EventBridge Validator & Networking Best Practices
+
+```
+Client (EventManager API) ──► EventBus Autoload ──► RPC System ──► EventBus (Receiving Peer)
+                                                                  │
+                                                                  ▼
+                                                          EventManager._validate_event()
+                                                                  │
+                                    ┌─────────────────────────────┴────────────────────────────┐
+                                    │ YES (Valid)                                             │ NO (Invalid)
+                                    ▼                                                        ▼
+                            emit_signal(event_name, args)                        Block event, log warning
+```
+
+## Overview
+
 EventBridge provides a data-driven event system with multiplayer support for Godot 4. It uses a generated EventManager.gd for easy access to events and relies on an EventBus autoload to dispatch and replicate events across peers.
 
-As of the latest update, EventBridge introduces:
+## As of the latest update, EventBridge introduces:
 
-✔ Validation Hooks – Security layer to prevent invalid or malicious events from executing.
-✔ Transfer Mode Enhancements – Support for unreliable_ordered for high-performance real-time updates.
-✔ Runtime Warnings – Detect unsafe channel configurations at runtime.
+- ✔ Validation Hooks – Security layer to prevent invalid or malicious events from executing.
+- ✔ Transfer Mode Enhancements – Support for unreliable_ordered for high-performance real-time updates.
+- ✔ Runtime Warnings – Detect unsafe channel configurations at runtime.
 
 Why Validation Exists
 In multiplayer games, clients can be compromised or send unexpected data (intentionally or accidentally). If your server trusts all incoming RPC calls blindly, cheating and crashes become possible.
 
-Example risks:
+### Example risks:
 
-A client sends an invalid dice roll result.
+- A client sends an invalid dice roll result.
+- A player triggers a kick_client event to remove others from the game.
+- A client sends thousands of fake events (spam attack).
 
-A player triggers a kick_client event to remove others from the game.
+### Solution: Validators ensure that every incoming event is verified before processing.
 
-A client sends thousands of fake events (spam attack).
+## How Validators Work
 
-Solution: Validators ensure that every incoming event is verified before processing.
-
-How Validators Work
 Naming Convention:
-For any event my_event, define a function:
 
+For any event my_event, define a function:
 ```gdscript
 func validate_my_event(args: Array) -> bool:
     # Return true to allow, false to block
 EventBridge automatically calls this validator (if present) on incoming RPC events before they trigger signals or game logic.
 ```
 
-
-
-
-
-
-## ✅ Where Validation Happens
+##  Where Validation Happens
 1. A peer (client or server) sends an event using:
 
 ```gdscript
 EventManager.some_event(arg1, arg2)
 ```
 
-This calls _invoke_event() in EventBusAutoload:
+2. This calls _invoke_event() in EventBusAutoload
 
-It decides how to send: local, to server, to all, or to a specific peer.
+3. It decides how to send: local, to server, to all, or to a specific peer.
 
-If the event is networked, it uses Godot's rpc() or rpc_id().
+4. If the event is networked, it uses Godot's rpc() or rpc_id().
 
-The receiving peer gets this event via the RPC method:
+5. The receiving peer gets this event via the RPC method:
 
 ```gdscript
 @rpc func rpc_event(ns_name: String, event_name: String, args: Array)
