@@ -36,13 +36,13 @@ EventBridge automatically calls this validator (if present) on incoming RPC even
 
 
 
-✅ Where Validation Happens
-A peer (client or server) sends an event using:
+## ✅ Where Validation Happens
+1. A peer (client or server) sends an event using:
 
-gdscript
-Copy
-Edit
+```gdscript
 EventManager.some_event(arg1, arg2)
+```
+
 This calls _invoke_event() in EventBusAutoload:
 
 It decides how to send: local, to server, to all, or to a specific peer.
@@ -51,18 +51,16 @@ If the event is networked, it uses Godot's rpc() or rpc_id().
 
 The receiving peer gets this event via the RPC method:
 
-gdscript
-Copy
-Edit
+```gdscript
 @rpc func rpc_event(ns_name: String, event_name: String, args: Array)
+```
+
 This is defined in event_bus.gd.
 
-✅ Validator Check Before Emitting
+## ✅ Validator Check Before Emitting
 Inside rpc_event() we added:
 
-gdscript
-Copy
-Edit
+```gdscript
 if Engine.has_singleton("EventManager"):
     var event_manager = Engine.get_singleton("EventManager")
     if not event_manager._validate_event(event_name, args):
@@ -70,34 +68,37 @@ if Engine.has_singleton("EventManager"):
         if debug_mode:
             _log("Event Bus", "Event blocked by validator: %s::%s" % [ns_name, event_name], LogLevel.WARN)
         return
-How _validate_event() works:
+```
+
+### How _validate_event() works:
+
 It’s defined in EventManager.gd (auto-generated).
 
 It constructs the validator name:
 
-gdscript
-Copy
-Edit
+```gdscript
 var validator_name = "validate_" + event_name
+```
+
 If a method with that name exists in EventManager (or a script extending it), it calls it:
 
-gdscript
-Copy
-Edit
+```gdscript
 if has_method(validator_name):
     var result = call(validator_name, args)
     if not result:
         push_warning("Validation failed for event '" + event_name + "'. Ignored.")
         return false
 return true
-✅ What This Means
+```
+
+### ✅ What This Means
 If you define:
 
-gdscript
-Copy
-Edit
+```gdscript
 func validate_request_roll(args: Array) -> bool:
     return args.size() == 0 # Only allow if no arguments
+```
+
 Then when a client sends EventManager.request_roll("hack_attempt"):
 
 EventBus receives it.
@@ -108,33 +109,23 @@ Validator returns false.
 
 Event does NOT trigger any signal or connected callback.
 
-✅ Signal Emission Happens Only If Validation Passes
+### ✅ Signal Emission Happens Only If Validation Passes
 After the validator returns true, the event is emitted:
 
-gdscript
-Copy
-Edit
+```gdscript
 callv("emit_signal", [signal_name] + args)
+```
+
 All your game systems listening for that signal will run as normal.
 
-✅ So in short:
+#### ✅ So in short:
 Validators are automatically called before any game logic runs.
 
 If validation fails, the event is dropped silently (with optional debug logs).
-
 If no validator exists, the event is allowed by default.
-
-
-
-
-
-
-
-
-
 Validators run on the receiving peer (usually the server for authority-controlled events).
 
-✅ Example: Dice Game
+#### ✅ Example: Dice Game
 Event: request_roll
 
 Sent by clients to the server to roll a dice.
