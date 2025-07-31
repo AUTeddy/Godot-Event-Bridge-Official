@@ -27,7 +27,7 @@
 
 ### 🔍 Auto-Correction Logic Flow
 
-![Auto-Correction Flowchart](docs/images/eventbridge_auto_correction_flowchart.png)
+![Auto-Correction Flowchart](images/eventbridge_auto_correction_flowchart.png)
 
 *(SVG for docs: `docs/images/eventbridge_auto_correction_flowchart.svg`)*
 
@@ -35,6 +35,6 @@
 
 ### 🔄 Invalid → Auto-Fix Mapping
 
-![Invalid → Auto-Fix Diagram](docs/images/eventbridge_invalid_autofix_mapping.png)
+![Invalid → Auto-Fix Diagram](images/eventbridge_invalid_autofix_mapping.png)
 
 *(SVG for docs: `docs/images/eventbridge_invalid_autofix_mapping.svg`)*
