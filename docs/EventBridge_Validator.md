@@ -1,4 +1,4 @@
-# EventBridge Validator & Networking Best Practices
+# EventBridge Validator & Networking
 
 ```
 Client (EventManager API) ──► EventBus Autoload ──► RPC System ──► EventBus (Receiving Peer)
