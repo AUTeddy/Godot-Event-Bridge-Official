@@ -188,11 +188,7 @@ Your support helps me keep improving and creating more useful tools for the Godo
   <img src="https://img.shields.io/badge/Support_me_on_Ko_Fi-blue?style=for-the-badge&logo=kofi&label=%20&labelColor=%23000&color=%23000" alt="Ko-fi" />
 </a>
 
-
-
 [![Static Badge](https://img.shields.io/badge/Buy_on-itch.io-red?style=for-the-badge&logo=itchdotio&labelColor=black)](https://auteddy.itch.io)
-
-## ✅ FAQ Section for README
 
 ## License
 
@@ -212,11 +208,3 @@ Liability:
 This plugin is provided "as-is" without any warranties or guarantees. The author is not responsible for any issues or damages that may occur from using this software.
 
 By using this plugin, you agree to these terms.
-
-## 📘 Configuration Rules
-For detailed configuration rules, valid combinations, and auto-correction logic:
-👉 [Read the Full Guide](docs/CONFIG_RULES.md)
-
-![Preview](docs/images/eventbridge_auto_correction_flowchart.png)
-
-
