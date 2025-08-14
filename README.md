@@ -208,3 +208,70 @@ Liability:
 This plugin is provided "as-is" without any warranties or guarantees. The author is not responsible for any issues or damages that may occur from using this software.
 
 By using this plugin, you agree to these terms.
+
+## EventBridge isn’t a replacement for RPC
+
+It’s a higher-level layer that uses Godot’s multiplayer/RPC under the hood and adds structure (namespaces), generated APIs, validation, and logging.
+
+# What EventBridge adds (on top of RPC)
+
+Namespace-based event bus: EventBusAutoload groups events (e.g. Game, Lobby) and emits them as signals.
+
+Generated façade: EventManager.gd gives typed methods like dice_broadcast(player_id, result), on_dice_broadcast(cb), off_dice_broadcast(cb).
+
+Per-event RPC config: Each event carries authority mode (authority vs any_peer), sync (call_remote vs call_local), transfer mode (reliable / unreliable / unordered), and channel. EventBridge maps these to rpc_config(...) on a single rpc_event entry point.
+
+Validation hooks: Central and per-event validators run before the network call is dispatched.
+
+Logging & tooling: Consistent logs and an editor dock for visibility.
+
+# What it does not replace
+
+Godot transports: ENet/WebSocket/WebRTC are still the underlying pipes.
+
+Ownership/authority rules: Node ownership, MultiplayerAPI.RPC_MODE_*, and peer authority still apply.
+
+State replication: Use MultiplayerSynchronizer / replication for continuous state; EventBridge focuses on discrete events.
+
+Low-level edge cases: Custom binary streams, bespoke reliability semantics beyond what Godot exposes, etc., still belong to raw RPC/peers.
+
+# When to use which
+
+Use EventBridge for gameplay “events” and cross-cutting signals (joins, chat, turns, combat results), where you want consistency, validators, and easy subscribe/unsubscribe.
+
+Use raw RPC for ultra-tight loops, custom replication, or very specific authority/serialization needs.
+
+Mixing is fine: You can have EventBridge for most gameplay, and still keep bespoke @rpc methods where needed.
+
+## Side-by-side example
+
+# Raw RPC
+
+``gdscript
+# server.gd
+@rpc("any_peer", "call_remote", "reliable")
+func rpc_dice_broadcast(player_id: int, result: int) -> void:
+    # notify everyone (server relays / or direct depending on topology)
+    print("DICE:", player_id, result)
+
+func broadcast_result(player_id: int, result: int) -> void:
+    rpc("rpc_dice_broadcast", player_id, result)
+``
+
+# EventBridge
+
+``gdscript
+# Generated API (EventManager.gd)
+EventManager.dice_broadcast(player_id, result)   # to_all / reliable / channel 0
+EventManager.on_dice_broadcast(func(pid, res):
+    print("[EB] DICE:", pid, res)
+)
+``
+
+Functionally they do the same thing; EventBridge standardizes the call site, applies validators, sets the correct RPC mode/channel, and wires up the signal for you.
+
+## Performance note
+
+EventBridge adds light overhead (signal emission, lookup, validation). The heavy work (serialization, delivery) is still Godot’s RPC, so performance characteristics remain dominated by the underlying transport and payload size.
+
+# TL;DR: EventBridge is a structured, safer abstraction over RPC, not a replacement. It keeps your gameplay code clean and consistent while still relying on Godot’s networking stack.
