@@ -14,9 +14,11 @@ This guide covers **performance optimizations**, **networking best practices**, 
 - Use `reliable` for critical events only (turn changes, actions).
 - For frequent updates (movement, animation), use:
   - `unreliable` or `unreliable_ordered` *(if network latency allows)*.
+
 - Example:
-  ```gdscript
+  ``gdscript
   Test.to_all_unreliable("update_position", [x, y])
+  ``
 
 ## 🌐 Networking Best Practices
 
