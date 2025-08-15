@@ -1,6 +1,15 @@
-# EventBridge Validator & Networking
 
-```
+# EventBridge Validator & Networking — Developer Guide
+
+This guide explains how **validators** integrate with EventBridge’s networking pipeline, how to **implement** them, and how to **configure transfer modes & channels** safely. It’s ready for docs sites, StackEdit, or GitHub.
+
+---
+
+## 📚 Overview
+
+EventBridge provides a data-driven event system with multiplayer support for Godot 4. It generates an `EventManager.gd` for easy access to events and uses an `EventBus` autoload to dispatch/replicate events across peers.
+
+```text
 Client (EventManager API) ──► EventBus Autoload ──► RPC System ──► EventBus (Receiving Peer)
                                                                   │
                                                                   ▼
@@ -12,186 +21,231 @@ Client (EventManager API) ──► EventBus Autoload ──► RPC System ─�
                             emit_signal(event_name, args)                        Block event, log warning
 ```
 
-## Overview
+Or as Mermaid:
 
-EventBridge provides a data-driven event system with multiplayer support for Godot 4. It uses a generated EventManager.gd for easy access to events and relies on an EventBus autoload to dispatch and replicate events across peers.
+```mermaid
+sequenceDiagram
+    participant C as Client
+    participant EB as EventBus (Sender)
+    participant RPC as RPC System
+    participant ER as EventBus (Receiver)
+    participant EM as EventManager
 
-## As of the latest update, EventBridge introduces:
+    C->>EB: EventManager.some_event(args)
+    EB->>RPC: rpc()/rpc_id()
+    RPC->>ER: rpc_event(ns, event, args)
+    ER->>EM: _validate_event(event, args)?
+    alt Valid
+        EM-->>ER: true
+        ER->>ER: emit_signal(event, args)
+    else Invalid
+        EM-->>ER: false
+        ER->>ER: block + warn (optional)
+    end
+```
 
-- ✔ Validation Hooks – Security layer to prevent invalid or malicious events from executing.
-- ✔ Transfer Mode Enhancements – Support for unreliable_ordered for high-performance real-time updates.
-- ✔ Runtime Warnings – Detect unsafe channel configurations at runtime.
+---
 
-Why Validation Exists
-In multiplayer games, clients can be compromised or send unexpected data (intentionally or accidentally). If your server trusts all incoming RPC calls blindly, cheating and crashes become possible.
+## ✨ What’s New (Latest Update)
 
-### Example risks:
+- ✔ **Validation Hooks** – Security layer to block invalid or malicious events before they reach gameplay.
+- ✔ **Transfer Mode Enhancements** – `unreliable_ordered` for smooth, high‑frequency updates.
+- ✔ **Runtime Warnings** – Detect unsafe channel configurations during playtests.
 
-- A client sends an invalid dice roll result.
-- A player triggers a kick_client event to remove others from the game.
-- A client sends thousands of fake events (spam attack).
+---
 
-### Solution: Validators ensure that every incoming event is verified before processing.
+## 🔒 Why Validation Exists
 
-## How Validators Work
+In multiplayer, clients can be compromised or simply buggy. If the server trusts all RPCs, you risk cheats and crashes.
 
-Naming Convention:
+**Example risks:**
 
-For any event my_event, define a function:
+- A client sends an **invalid dice roll** result.
+- A player triggers a **kick_client** event to remove others.
+- A client spams **thousands of events** to degrade performance.
+
+**Solution:** **Validators** verify incoming events **before** any game logic runs.
+
+---
+
+## 🧠 How Validators Work
+
+### Naming Convention
+
+For any event `my_event`, define a function:
+
 ```gdscript
 func validate_my_event(args: Array) -> bool:
     # Return true to allow, false to block
-EventBridge automatically calls this validator (if present) on incoming RPC events before they trigger signals or game logic.
+    return true
 ```
 
-##  Where Validation Happens
-1. A peer (client or server) sends an event using:
+EventBridge automatically calls this validator (if present) on the **receiving peer** *before* emitting signals or invoking callbacks.
+
+### Where Validation Happens
+
+1. A peer sends an event via the generated API, e.g.:
+   ```gdscript
+   EventManager.some_event(arg1, arg2)
+   ```
+2. This calls an internal `_invoke_event()` in the EventBus (autoload).
+3. The bus decides the path: **local**, **to_server**, **to_all**, or **to_id**.
+4. For networked events, it uses `rpc()` / `rpc_id()`.
+5. The receiving peer handles it in the RPC handler:
+   ```gdscript
+   @rpc func rpc_event(ns_name: String, event_name: String, args: Array) -> void:
+       # Validation check happens here (see below)
+   ```
+
+> _Note:_ If your actual autoload name differs (e.g., `EventBusAutoload`), adjust accordingly.
+
+---
+
+## ✅ Validator Check (in `rpc_event`)
+
+Inside `event_bus.gd` you should perform the check before emitting:
 
 ```gdscript
-EventManager.some_event(arg1, arg2)
-```
+# Pseudocode/sketch — adapt to your project structure/names
+@rpc("any_peer", "call_local", "reliable")
+func rpc_event(ns_name: String, event_name: String, args: Array) -> void:
+    # If EventManager is an autoload, it's accessible as a global
+    # singleton by the name you configured in Project Settings.
+    # Example: if you autoloaded it as "EventManager", you can use it directly.
+    var ok := true
+    if "EventManager" in ProjectSettings.get_setting("autoload", {}):
+        ok = EventManager._validate_event(event_name, args)
+    elif Engine.has_singleton("EventManager"):
+        # Only if you registered it as an engine singleton (rare)
+        var em = Engine.get_singleton("EventManager")
+        ok = em._validate_event(event_name, args)
 
-2. This calls _invoke_event() in EventBusAutoload
-
-3. It decides how to send: local, to server, to all, or to a specific peer.
-
-4. If the event is networked, it uses Godot's rpc() or rpc_id().
-
-5. The receiving peer gets this event via the RPC method:
-
-```gdscript
-@rpc func rpc_event(ns_name: String, event_name: String, args: Array)
-```
-
-This is defined in event_bus.gd.
-
-## ✅ Validator Check Before Emitting
-Inside rpc_event() we added:
-
-```gdscript
-if Engine.has_singleton("EventManager"):
-    var event_manager = Engine.get_singleton("EventManager")
-    if not event_manager._validate_event(event_name, args):
-        # Validation failed → Block event
-        if debug_mode:
-            _log("Event Bus", "Event blocked by validator: %s::%s" % [ns_name, event_name], LogLevel.WARN)
+    if not ok:
+        if DEBUG:
+            EventBridgeLogger.event_log("EventBus", "Blocked by validator: %s::%s" % [ns_name, event_name], 2)
         return
+
+    # Emit only after validation
+    var signal_name := ns_name + "__" + event_name
+    if has_signal(signal_name):
+        # Forward args: callv is used to splat the array after the signal name
+        callv("emit_signal", [signal_name] + args)
 ```
 
-### How _validate_event() works:
+> If you use a different mechanism to access the EventManager (e.g., `get_node("/root/EventManager")`), adapt accordingly.
 
-It’s defined in EventManager.gd (auto-generated).
+---
 
-It constructs the validator name:
+## 🔍 How `_validate_event()` Works (Generated)
+
+In the generated `EventManager.gd`, a helper typically:
 
 ```gdscript
-var validator_name = "validate_" + event_name
+func _validate_event(event_name: String, args: Array) -> bool:
+    var validator_name := "validate_" + event_name
+    if has_method(validator_name):
+        var ok := call(validator_name, args)
+        if not ok:
+            push_warning("Validation failed for event '%s'. Ignored." % event_name)
+            return false
+    return true
 ```
 
-If a method with that name exists in EventManager (or a script extending it), it calls it:
+**Meaning:** If you implement a method named `validate_<event>` anywhere that **extends** or **replaces** the EventManager autoload, it will be picked up and executed.
 
-```gdscript
-if has_method(validator_name):
-    var result = call(validator_name, args)
-    if not result:
-        push_warning("Validation failed for event '" + event_name + "'. Ignored.")
-        return false
-return true
-```
+---
 
-### ✅ What This Means
-If you define:
+## 🧪 Examples
 
-```gdscript
-func validate_request_roll(args: Array) -> bool:
-    return args.size() == 0 # Only allow if no arguments
-```
+### 1) Secure Dice Roll
 
-Then when a client sends EventManager.request_roll("hack_attempt"):
+**Event:** `request_roll` (client → server)
 
-EventBus receives it.
-
-Calls EventManager._validate_event("request_roll", ["hack_attempt"]).
-
-Validator returns false.
-
-Event does NOT trigger any signal or connected callback.
-
-### ✅ Signal Emission Happens Only If Validation Passes
-After the validator returns true, the event is emitted:
-
-```gdscript
-callv("emit_signal", [signal_name] + args)
-```
-
-All your game systems listening for that signal will run as normal.
-
-#### ✅ So in short:
-Validators are automatically called before any game logic runs.
-
-If validation fails, the event is dropped silently (with optional debug logs).
-If no validator exists, the event is allowed by default.
-Validators run on the receiving peer (usually the server for authority-controlled events).
-
-#### ✅ Example: Dice Game
-Event: request_roll
-
-Sent by clients to the server to roll a dice.
-
-Validator Implementation (on server):
-
+**Validator:** reject unexpected args.
 ```gdscript
 func validate_request_roll(args: Array) -> bool:
-    # Clients shouldn't send arguments for this event
+    # Clients shouldn't send any arguments
     if args.size() > 0:
-        print("Validator: Invalid arguments for request_roll")
+        print("Validator: Invalid args for request_roll")
         return false
     return true
-
-#If a hacked client tries:
-
-EventManager.request_roll("give_me_100_points")
-# → Blocked by validator, logged as:
 ```
 
+**Hacked client tries:**
 ```gdscript
-Validation failed for event 'request_roll'. Ignored.
-✅ Example: Secure Chat
-Event: send_chat_message
-
-Args: [player_id: int, message: String]
+EventManager.request_roll("give_me_100_points")
+# -> Blocked by validator. No signal emitted.
 ```
 
-Validator Implementation:
+---
 
+### 2) Secure Chat
+
+**Event:** `send_chat_message(args: [player_id: int, message: String])`
+
+**Validator:**
 ```gdscript
 func validate_send_chat_message(args: Array) -> bool:
+    if args.size() != 2:
+        return false
     var player_id = args[0]
-    var message = args[1]
-
-    # Ensure the message is short and clean
+    var message: String = args[1]
     if message.length() > 200:
         return false
     if message.begins_with("/kick"):
         return false # Prevent abuse of chat commands
     return true
 ```
-    
-## Where Validators Live
-Add them in event_validators.gd (autoload folder) or in a script that extends it.
 
-They must not modify the args; they only approve or reject.
+---
 
+### 3) Authority Gate (Kick)
 
-Option 1: In EventManager.gd directly (recommended for small projects)
+**Event:** `kick_client(args: [target_id: int])`
+
+**Validator:**
+```gdscript
+func validate_kick_client(args: Array) -> bool:
+    # Only allow from server authority
+    return get_tree().is_network_server()
+```
+
+---
+
+### 4) Simple Rate Limiter (Anti‑Spam)
+
+```gdscript
+var _last_message_time := {}
+const CHAT_COOLDOWN := 1.0 # seconds
+
+func validate_chat_message_rate(args: Array) -> bool:
+    var player_id := str(args[0])
+    var now := Time.get_unix_time_from_system()
+    if _last_message_time.has(player_id) and now - _last_message_time[player_id] < CHAT_COOLDOWN:
+        print("[Validator] Spam detected for player %s" % player_id)
+        return false
+    _last_message_time[player_id] = now
+    return true
+```
+
+> Keep validators **lightweight**; they run in the networking path.
+
+---
+
+## 🗂️ Where Validators Live
+
+You have two options:
+
+### Option A: Inline (small projects)
+Add the functions directly into the generated `EventManager.gd` **(below the autogenerated region)** or into a partial/extension if your setup supports it.
 
 ```gdscript
 func validate_request_roll(args: Array) -> bool:
     return args.size() == 0
 ```
 
-Option 2: In event_validators.gd by extending EventManager
-For large projects, keep validators separate for clean code:
+### Option B: Separate File (recommended for larger projects)
+Create `res://autoload/event_validators.gd` and **extend** the EventManager. Autoload this script **instead of** (or **in addition to**) the generated one, depending on your architecture.
 
 ```gdscript
 # File: res://autoload/event_validators.gd
@@ -201,191 +255,82 @@ func validate_request_roll(args: Array) -> bool:
     return args.size() == 0
 
 func validate_kick_client(args: Array) -> bool:
-    return get_tree().is_network_server() # Only server can process
-Why this works:
-EventManager._validate_event() uses has_method() and call().
+    return get_tree().is_network_server()
 ```
 
-If your autoload instance is event_validators.gd and it extends EventManager,
-then has_method("validate_request_roll") will return true, and it runs your custom code.
+> Because it **extends** `EventManager`, `has_method("validate_x")` will return true on the autoload instance, and your custom logic will run.
 
+---
 
-## Transfer Modes Explained
+## 🚦 Transfer Modes & Channel Safety
+
 EventBridge supports three transfer modes:
 
-reliable – Guaranteed delivery, ordered (default).
+- **reliable** – Guaranteed, ordered (default). Use for critical state (turns, inventory).
+- **unreliable** – Best effort. Use for non‑critical, high‑frequency updates (FX).
+- **unreliable_ordered** – Ordered per **channel**, drops outdated packets. Ideal for positions/aim.
 
-unreliable – Faster, but packets may be lost (use for non-critical updates).
+### When to use `unreliable_ordered`
+- You only care about the **latest** state (e.g., positions).
+- Older packets can be dropped without harm (prevents rubberbanding).
 
-unreliable_ordered – Fast and ordered, but older packets may be dropped if newer arrive.
-
-✅ When to Use unreliable_ordered
-Example: Player position updates in a fast-paced game.
-
-You only care about the latest position, not old ones.
-
-If packet #1 arrives after #2, it is discarded automatically.
-
-Reduces bandwidth and avoids "rubberbanding".
-
-Configuration in Event Dock:
-
-Set Transfer Mode = unreliable_ordered.
-
-Assign a dedicated channel (avoid sharing with other events).
+**EventDock Configuration:**  
+- Set **Transfer Mode** = `unreliable_ordered`  
+- Assign a **dedicated channel** (don’t mix with other event types).
 
 ```gdscript
-Channel Safety
-Godot supports multiple ENet channels for parallel streams of events.
-Rule:
-When using unreliable_ordered, do NOT mix different event types on the same channel, or packets for one event may drop packets for another.
+# Channel Safety Rule
+# Do NOT mix different event types on the same channel when using unreliable_ordered,
+# or packets for one may cause others to drop.
 ```
 
-EventBridge helps you by:
-
-UI Warning: In the Event Dock if multiple events share the same channel.
-
-Runtime Warning: Logs conflicts during execution.
-
-✅ Bad Example (Will cause dropped packets):
-```gdscript
+**Bad Example (causes drops/latency):**
+```text
 Channel 0 → player_position_update (unreliable_ordered)
-Channel 0 → enemy_spawn (reliable)
-If enemy_spawn arrives after a position update, it might block future updates.
+Channel 0 → enemy_spawn            (reliable)
 ```
 
-✅ Good Example:
-```gdscript
+**Good Example:**
+```text
 Channel 0 → player_position_update (unreliable_ordered)
-Channel 1 → enemy_spawn (reliable)
-Developer Workflow Summary
-Create Events in Event Dock.
+Channel 1 → enemy_spawn            (reliable)
 ```
 
-Assign transfer modes:
+**EventBridge helps you:**
+- **Dock warnings** for shared channels with risky modes.
+- **Runtime warnings** when conflicts are detected.
 
-reliable for critical game logic (dice rolls, inventory updates).
+---
 
-unreliable or unreliable_ordered for high-frequency data (movement, effects).
+## 🧪 Testing Validators
 
-Add validators for authority-side events (e.g., to_server).
+1. Enable **Debug** in the EventDock (toasts + console mapping).
+2. Write a failing validator (e.g., reject messages > 200 chars).
+3. Send an oversized message from a client.
+4. Confirm the event is **blocked** and the log shows a warning.
+5. Verify **no gameplay system** reacted to the blocked event.
 
-Monitor warnings in:
+---
 
-Dock Toasts: for config mistakes.
+## ✅ Quick Validator Cheat Sheet
 
-Console Logs: for runtime issues.
+| Use Case                 | Example Event        | Validator Strategy                    |
+|-------------------------|----------------------|---------------------------------------|
+| Block invalid args      | `request_roll`       | Reject if `args.size() != 0`          |
+| Anti‑cheat checks       | `attack_enemy`       | Reject if `enemy_id` invalid          |
+| Spam limiting           | `send_chat_message`  | Per‑peer cooldown                     |
+| Security enforcement    | `kick_client`        | Allow only if server authority        |
 
-Quick Validator Cheat Sheet
-Use Case	Example Event	Validator Example
-Block invalid args	request_roll	Reject if args not empty
-Anti-cheat checks	attack_enemy	Reject if enemy_id is invalid
-Limit spam	send_chat_message	Reject if too many messages/sec
-Security enforcement	kick_client	Reject if caller is not admin
+---
 
-## ✅ With validators + proper transfer mode configuration, EventBridge now provides both performance and security for multiplayer Godot games.
+## 🔧 Developer Workflow Summary
 
+1. **Create events** in EventDock.  
+2. Assign **transfer modes** (`reliable` vs `unreliable(_ordered)`) and **channels**.  
+3. Implement **validators** for authority‑side and critical events.  
+4. **Regenerate** if you changed registry or API.  
+5. **Test** with Debug enabled and watch warnings/logs.
 
-## ✅ 1. Real-World Validator Implementation (validators.gd)
-Create this as an autoload or attach it to your main game node.
+---
 
-```gdscript
-
-# File: res://scripts/validators.gd
-extends Node
-
-# === Security & Anti-Cheat Validators for EventBridge ===
-# These are examples you can modify for your game.
-
-# 1. Prevent invalid dice roll requests
-func validate_request_roll(args: Array) -> bool:
-    # Clients should not send any arguments for this event
-    if args.size() > 0:
-        print("[Validator] request_roll rejected: unexpected args")
-        return false
-    return true
-
-# 2. Prevent invalid dice results (server sending to clients)
-func validate_dice_result(args: Array) -> bool:
-    var result = args[0] if args.size() > 0 else null
-    # Only allow numbers between 1 and 6
-    if result == null or result < 1 or result > 6:
-        print("[Validator] dice_result rejected: invalid value")
-        return false
-    return true
-
-# 3. Prevent unauthorized kick
-func validate_kick_client(args: Array) -> bool:
-    var msg = args[0]
-    # Only allow this event from server authority
-    if !get_tree().is_network_server():
-        print("[Validator] kick_client rejected: unauthorized peer")
-        return false
-    return true
-
-# 4. Secure chat system
-func validate_send_chat_message(args: Array) -> bool:
-    if args.size() != 2:
-        return false
-    var message = args[1]
-    if message.length() > 200:
-        return false
-    if message.begins_with("/kick"):
-        return false # Disallow dangerous commands in chat
-    return true
-
-# 5. Rate limit example (anti-spam)
-var last_message_time := {}
-const CHAT_COOLDOWN = 1.0 # seconds
-func validate_chat_spam(args: Array) -> bool:
-    var player_id = str(args[0])
-    var now = Time.get_unix_time_from_system()
-    if last_message_time.has(player_id) and now - last_message_time[player_id] < CHAT_COOLDOWN:
-        print("[Validator] Player %s spam detected" % player_id)
-        return false
-    last_message_time[player_id] = now
-    return true
-```
-
-✅ How It Works:
-Each function follows the auto-naming pattern:
-validate_<event_name>(args: Array) -> bool
-
-Return true to allow, false to block.
-
-Print messages for debugging (can later replace with logs or telemetry).
-
-✅ 2. Event Flow Diagram
-Here’s a clear diagram of how validation fits into the event system:
-
-```
-Client (EventManager API) ──► EventBus Autoload ──► RPC System ──► EventBus (Receiving Peer)
-                                                                  │
-                                                                  ▼
-                                                          EventManager._validate_event()
-                                                                  │
-                                    ┌─────────────────────────────┴────────────────────────────┐
-                                    │ YES (Valid)                                             │ NO (Invalid)
-                                    ▼                                                        ▼
-                            emit_signal(event_name, args)                        Block event, log warning
-```
-
-Key Points
-Validation only happens on the receiving side (usually the server for authority).
-
-If a validator exists and returns false, the event is ignored.
-
-If no validator exists, the event is allowed by default.
-
-✅ 3. Developer Best Practices
-Always add validators for:
-
-Events targeting the server (to_server).
-
-Events that modify critical game state (e.g., score updates, item trades).
-
-Use rate limiting for spam-prone events like chat or emotes.
-
-Keep validators lightweight—they run in the network loop.
-
-Combine validators with server authority checks for extra security.
+**With validators + proper transfer configuration, EventBridge delivers both performance _and_ security for multiplayer Godot games.**

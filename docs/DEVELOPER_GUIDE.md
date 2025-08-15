@@ -1,111 +1,285 @@
-# 📘 EventBridge Developer Guide
+# EventBridge Developer Guide — Using the EventDock (Godot 4)
 
-A complete reference for configuring, validating, and optimizing EventBridge events in Godot. Includes **valid configuration tables**, **auto-correction rules**, **flow diagrams**, and **advanced tips**.
-
----
-
-## ✅ Valid Event Configurations
-
-| **Target**       | **Mode**        | **Sync**        | **Transfer Mode**      | **Channel** | **Notes / Recommended Usage**                                   |
-|------------------|---------------|-----------------|-------------------------|-------------|----------------------------------------------------------------|
-| **emit_local**   | `any_peer`    | `call_local`    | `reliable` *(default)* | 0–4         | Local-only events. `Mode` irrelevant. Transfer settings have no effect. |
-| **to_server**    | `authority`   | `call_remote`   | `reliable` *(default)* | 0–4         | Client → Server calls. Requires `authority` mode.             |
-| **to_id**        | `any_peer`    | `call_remote`   | `reliable` *(default)* | 0–4         | Peer → Peer messaging. Usually controlled by server.          |
-| **to_all**       | `any_peer`    | `call_remote`   | `reliable` *(default)* | 0–4         | Broadcast from server (or authoritative peer).                |
+This guide shows you how to **configure, generate, and use events** with the **EventDock** after installing the EventBridge plugin.  
+We assume you already have a **server build running** and can connect clients.
 
 ---
 
-## ❌ Invalid Combos & Auto-Correction
+## ✅ Prerequisites
 
-| **Invalid Combination**                                      | **Reason**                                      | **Auto-Corrected To**                                    |
-|--------------------------------------------------------------|-------------------------------------------------|---------------------------------------------------------|
-| `emit_local` + `call_remote`                                | Local events cannot use remote calls           | `call_local`                                           |
-| `emit_local` + `authority`                                  | Mode irrelevant for local events               | `any_peer`                                             |
-| `emit_local` + `unreliable` / `unreliable_ordered`          | Transfer mode irrelevant for local events      | `reliable`                                             |
-| `to_server` + `any_peer`                                    | Server calls must use authority mode           | `authority`                                            |
-| `to_server` + `call_local`                                  | Network targets require remote calls           | `call_remote`                                          |
-| `to_id` / `to_all` + `call_local`                           | Network targets require remote calls           | `call_remote`                                          |
-| `transfer_channel < 0` or `> 4`                             | Invalid channel range                          | Clamped to `0–4`                                       |
+- Godot 4.x project with **EventBridge** installed and enabled.
+- A running **server** (local or remote) your clients can connect to.
+- (Optional) Admin tools/scenes if you use them (e.g., an Admin UI to monitor logs).
 
----
-
-## 🔍 Auto-Correction Logic Flow
-
-![Auto-Correction Flowchart](images/eventbridge_auto_correction_flowchart.png)
-
-*(SVG version: [Download](images/eventbridge_auto_correction_flowchart.svg))*
+> Paths used by EventBridge (defaults):
+>
+> - Registry JSON: `res://addons/event_bridge/generated/event_registry.json`  
+> - Generated API: `res://addons/event_bridge/generated/EventManager.gd`  
+> - Data resource: `res://addons/event_bridge/generated/event_data.tres`  
+> - Logger scene (optional): `res://addons/event_bridge/event_bridge_logger.tscn`
 
 ---
 
-## 🔄 Invalid → Auto-Fix Mapping
+## 🧭 The EventDock at a Glance
 
-![Invalid → Auto-Fix Diagram](images/eventbridge_invalid_autofix_mapping.png)
+Open **EventDock** from the bottom panel or **Plugins** menu (depending on your setup). The dock lets you:
+- Create and organize **Namespaces** (categories) and **Events**.
+- Configure **Target, Mode, Sync, Transfer mode, Channel**, and **Args**.
+- See **validation hints** and **auto-corrections** for invalid combos.
+- **Generate / Re-generate** the registry and API wrappers.
+- Inspect a **Connections View** (who emits, who listens) for quick navigation.
+- Toggle **Debug** to see toasts and console prints.
 
-*(SVG version: [Download](images/eventbridge_invalid_autofix_mapping.svg))*
-
----
-
-## 🌐 Networking Best Practices
-
-### **3. Transfer Channels**
-Prioritize traffic using channels:
-- **Channel 0** → Highest priority (critical events).
-- **Channel 1–4** → Secondary traffic (UI sync, animations).
-- Separate channels reduce packet queuing delays.
+> Tip: EventDock shows small warnings when a combination is invalid. When you **Generate**, EventBridge applies safe **auto-corrections** (see the Configuration Rules doc).
 
 ---
 
-### **4. Use ENet’s Features**
-Godot’s `NetworkedMultiplayerENet` supports:
-- **Compression** → Reduce bandwidth usage.
-- **Packet Merging** → Enable `enet_compress` in Project Settings.
-- Use `peer.set_channel_count(5)` for more than 4 channels.
+## 🏗️ Step-by-Step: Create Your First Event
+
+### 1) Add a Namespace
+1. In EventDock, click **Add Namespace**.
+2. Give it a name, e.g. `Game` or `Admin`.  
+   Namespaces keep your events organized and map to an object you’ll access in code.
+
+### 2) Add an Event
+1. Select your namespace and click **Add Event**.
+2. Define the **event name**, e.g. `client_connected`, `turn_changed`, `request_attack`.
+3. Configure:
+   - **Target:** `emit_local`, `to_server`, `to_all`, or `to_id`
+   - **Mode:** `any_peer` or `authority` (authority for server-owned actions)
+   - **Sync:** `call_local` or `call_remote` (networked targets require remote)
+   - **Transfer mode:** `reliable`, `unreliable`, `unreliable_ordered`
+   - **Channel:** `0–4` by default (increase ENet channel count if you need more)
+4. (Optional) Add **arguments** with names and types (e.g., `player_id:int`, `pos:Vector2`).
+
+> Hints:
+> - **High‑frequency** cosmetic traffic → `unreliable`/`unreliable_ordered`, channel `2+`.
+> - **Critical** game state → `reliable`, channel `0`.
+> - **Client → Server** requests should be `to_server` + `authority` mode (server authoritative).
+
+### 3) Generate the API
+Click **Generate** (or **Generate Registry**). This updates:
+- `event_registry.json`
+- `EventManager.gd` (the autogenerated API)
+- Other generated data used by the plugin.
+
+Re‑generate whenever you add/change events in the dock.
 
 ---
 
-## 🔐 Security & Authority Control
+## 🧪 Using Events in Code
 
-### **5. Authority Mode**
-- Only the server should trigger critical events (e.g., combat results, turn change).
-- Clients should only emit `to_server` calls.
-- Validate all client events on the server before applying game logic.
+You have two common patterns: **Namespace handle** calls or **Auto‑generated wrapper** calls.
+
+### A) Namespace handle (dynamic)
+```gdscript
+# Get the namespace object
+var Admin = EventBridge.get_namespace("Admin")
+
+# Subscribe
+Admin.on("client_connected", func(player_id: int):
+    print("CLIENT CONNECTED:", player_id)
+)
+
+# Emit (server-side example)
+if multiplayer.is_server():
+    Admin.to_all("client_connected", [multiplayer.get_unique_id()])
+
+# Cleanup
+func _exit_tree() -> void:
+    Admin.off_all()
+```
+
+### B) Auto‑generated wrappers (if enabled in your project)
+Depending on your generation settings, you may get helper functions like:
+```gdscript
+# Subscribe / Unsubscribe
+EventManager.on_client_connected(func(player_id: int) -> void:
+    print("Client connected:", player_id)
+)
+EventManager.off_client_connected(func_ref) # or keep a reference to your callback
+
+# Emit (server-side)
+EventManager.to_all_client_connected(multiplayer.get_unique_id())
+```
+> The exact wrapper names depend on your generator template. If wrappers aren’t present, use the namespace handle approach.
 
 ---
 
-### **6. Prevent RPC Injection**
-- Never trust `any_peer` for sensitive actions.
-- Use **authority** for:
-  - `to_server` events.
-  - Broadcasts from the server.
+## 📡 Common Recipes
+
+### 1) Button press → send event
+```gdscript
+@onready var start_button: Button = %StartButton
+var Game = EventBridge.get_namespace("Game")
+
+func _ready() -> void:
+    start_button.pressed.connect(_on_start_pressed)
+
+func _on_start_pressed() -> void:
+    # Client requests to start the match (server validates)
+    Game.to_server("request_start_match", [multiplayer.get_unique_id()])
+```
+
+### 2) Area2D entered → grant boost on server
+```gdscript
+@onready var area: Area2D = $Area2D
+var Game = EventBridge.get_namespace("Game")
+
+func _ready() -> void:
+    area.body_entered.connect(_on_entered)
+
+func _on_entered(body: Node) -> void:
+    if body is CharacterBody2D:
+        var player_id := body.get_multiplayer_authority()
+        # Ask the server to grant a boost (validated server-side)
+        Game.to_server("request_boost", [player_id, "speed", 3.0]) # (id, type, amount)
+```
+
+### 3) Server receives → validates → broadcasts
+```gdscript
+# In a server-only script or guarded by `if multiplayer.is_server()`
+var Game = EventBridge.get_namespace("Game")
+
+# Subscribe to client requests
+Game.on("request_boost", func(player_id: int, kind: String, amount: float):
+    if _validate_boost(player_id, kind, amount):
+        # Apply and broadcast
+        _apply_boost(player_id, kind, amount)
+        Game.to_all("boost_applied", [player_id, kind, amount])
+)
+
+func _validate_boost(id: int, kind: String, amount: float) -> bool:
+    return amount > 0.0 and kind in ["speed", "shield", "attack"]
+```
+
+### 4) Ping/Pong
+```gdscript
+var Net = EventBridge.get_namespace("Net")
+
+# Client listens for ping and responds
+Net.on("ping", func(ts: int):
+    Net.to_server("pong", [ts, multiplayer.get_unique_id()])
+)
+
+# Server periodically pings everyone
+if multiplayer.is_server():
+    func _process(_dt):
+        if Time.get_ticks_msec() % 2000 < 16:
+            Net.to_all_unreliable("ping", [Time.get_ticks_msec()]) # non-critical
+```
 
 ---
 
-## 🎛 Debugging & Logging
+## 🧰 Validators & Security
 
-### **7. Enable Debug Mode**
-- Toggle **Debug** in EventBridge dock.
-- Displays toast notifications for auto-corrections.
-- Prints event mapping to the Output console.
+EventBridge can call **per‑event validators** before dispatch:
+- Name your validator functions `validate_<event>` (e.g., `validate_request_boost`).
+- Implement them in your chosen validator script or where your generation expects them.
+- Return `true` to allow, `false` to block (and optionally log).
+
+```gdscript
+func validate_request_boost(player_id: int, kind: String, amount: float) -> bool:
+    if not multiplayer.is_server():
+        return false # only server validates/executes
+    if amount <= 0.0: return false
+    if kind not in ["speed", "shield", "attack"]: return false
+    return true
+```
+
+**Authority tips:**
+- Make the **server authoritative** for game-changing events.
+- Clients should use **`to_server`** to *request* actions; server validates and then emits `to_all` as needed.
+- Avoid trusting `any_peer` for sensitive actions.
 
 ---
 
-### **8. Trace Event Usage**
-- Use **Connections View** in the EventBridge plugin.
-- Shows all subscribers and emitters in your project.
-- Double-click to jump to the script and line of usage.
+## 🛰️ Transfer Modes & Channels (Quick Guide)
+
+- **reliable**: Guaranteed delivery, ordered. Use for state changes, turn logic.
+- **unreliable**: Best-effort, can drop. Use for high-frequency cosmetic data.
+- **unreliable_ordered**: Ordered within the same channel, but can still drop.
+
+**Channels (0–4 by default)**  
+Organize traffic by priority:
+- `0`: Critical (turn, match state)
+- `1–2`: Secondary (UI sync, chat)
+- `3–4`: Low-priority (VFX/anim)
+
+> If you need more channels, increase ENet channel count on your peer (`set_channel_count(n)`).
+
+---
+
+## 🔎 Debugging
+
+- **Debug toggle** in EventDock for toasts and console logging.
+- Use the **Connections View** to see who listens/emits. Double‑click to open the source file at the call site.
+- Add the **EventBridge Logger** scene to your debug UI if you want a live event log.
+- Call `off_all()` in `_exit_tree()` to avoid leaking subscriptions during hot‑reloads.
+
+---
+
+## ♻️ Regeneration Workflow
+
+1. Change events or arguments in EventDock.
+2. Click **Generate**.
+3. Commit the updated files (`event_registry.json`, `EventManager.gd`, etc.).
+4. Re-run the game. Ensure both **server and clients** use the **same registry** version.
+
+> **Version mismatch** between server and clients can cause failed dispatches or mismatched parameters.
+
+---
+
+## 🧪 Local Testing Setup
+
+- Run a **headless server** locally (or on your VPS).
+- Start **two game clients** from the editor with distinct feature flags (e.g., `--feature admin`, `--feature client`), or separate editor instances.
+- Watch the **Output panel** and **Logger UI** for event traces.
+- Use `unreliable` for flood tests and confirm channels aren’t blocking critical traffic.
 
 ---
 
 ## ✅ Quick Checklist
-✔ Use **emit_local** for offline/local logic.  
-✔ Use **to_server** for client → server communication.  
-✔ Validate **critical actions** on the server.  
-✔ Batch frequent updates & use `unreliable` where safe.  
-✔ Use **channels** for prioritization.  
-✔ Enable **debug mode** during development.  
+
+- Create namespaces and events in **EventDock**.
+- Use **`to_server`** for client requests, **`to_all`/`to_id`** for server broadcasts.
+- Add **validators** for sensitive events.
+- Separate **channels** by priority; use **`unreliable`** for spammy data.
+- Turn on **Debug** while iterating; **off_all()** on teardown.
+- **Regenerate** after changes and keep server/clients in sync.
 
 ---
 
-### 🔗 **Additional Docs**
-- [Event Auto-Correction Rules](CONFIG_RULES.md)
-- [Advanced Performance Tips](ADVANCED_TIPS.md)
+## 📎 Appendix — Handy Snippets
+
+**Get a namespace once and reuse:**
+```gdscript
+var Admin := EventBridge.get_namespace("Admin")
+```
+
+**Subscribe with a named function (easy to off):**
+```gdscript
+func _ready():
+    Admin.on("client_connected", _on_client_connected)
+
+func _on_client_connected(player_id: int) -> void:
+    print("Connected:", player_id)
+
+func _exit_tree():
+    Admin.off("client_connected", _on_client_connected)
+```
+
+**Server-only guard:**
+```gdscript
+if not multiplayer.is_server():
+    return
+```
+
+**Emit locally (no network):**
+```gdscript
+Admin.emit_local("ui_flash", ["You have joined the lobby!"])
+```
+
+---
+
+Happy bridging! 🎮

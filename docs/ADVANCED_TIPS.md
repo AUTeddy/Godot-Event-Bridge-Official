@@ -1,88 +1,122 @@
-# EventBridge Advanced Tips
+# EventBridge Advanced Tips & Best Practices
 
-This guide covers **performance optimizations**, **networking best practices**, and **advanced event configuration**.
+This guide expands on **performance optimizations**, **networking best practices**, **security measures**, and **advanced event configuration** for developers using EventBridge in Godot.
 
 ---
 
 ## 🚀 Performance Optimization
 
 ### 1. **Batching Events**
-- Combine multiple small events into a single event with an `Array` or `Dictionary` payload.
-- Reduces RPC overhead when sending frequent updates (e.g., positions).
+- Instead of sending many tiny events in quick succession, combine them into a single event using an `Array` or `Dictionary` payload.
+- Greatly reduces **RPC overhead** and improves performance when syncing frequent updates such as player positions or scores.
 
-### 2. **Avoid High-Frequency Reliable RPC**
-- Use `reliable` for critical events only (turn changes, actions).
-- For frequent updates (movement, animation), use:
-  - `unreliable` or `unreliable_ordered` *(if network latency allows)*.
-
-- Example:
-  ``gdscript
-  Test.to_all_unreliable("update_position", [x, y])
-  ``
-
-## 🌐 Networking Best Practices
-
-### **3. Transfer Channels**
-Use channels to prioritize important traffic:
-
-- **Channel 0** → Highest priority (critical events).
-- **Channel 1–4** → Secondary traffic (UI sync, animations).
-- Separate channels avoid packet queuing delays.
+**Example:**
+```gdscript
+# Combine multiple position updates into one packet
+var updates = [
+    {"id": 1, "pos": Vector2(100, 200)},
+    {"id": 2, "pos": Vector2(300, 450)}
+]
+Game.to_all("batched_positions", [updates])
+```
 
 ---
 
-### **4. Use ENet’s Features**
+### 2. **Avoid High-Frequency Reliable RPC**
+- Use `reliable` for **critical events only** (turn changes, combat results).
+- For frequent updates (movement, animations), use:
+  - `unreliable` or `unreliable_ordered` (when slight packet loss is acceptable).
+- Reliable mode can cause delays if a packet is lost, as all later packets wait for retransmission.
+
+**Example:**
+```gdscript
+Test.to_all_unreliable("update_position", [x, y])
+```
+
+---
+
+## 🌐 Networking Best Practices
+
+### 3. **Transfer Channels**
+Organize events by priority using **channels**:
+
+| Channel | Use Case |
+|---------|----------|
+| **0**   | Highest priority (critical game events) |
+| **1–2** | Secondary traffic (UI sync, chat) |
+| **3–4** | Low-priority updates (animations, effects) |
+
+Using separate channels prevents important packets from being delayed by large, low-priority messages.
+
+**Example:**
+```gdscript
+Test.to_all("ui_sync", [data], channel=1)
+```
+
+---
+
+### 4. **Use ENet’s Built-in Features**
 Godot’s `NetworkedMultiplayerENet` supports:
 
-- **Compression** → Reduces bandwidth usage.
-- **Packet Merging** → Enable via `enet_compress` in Project Settings.
-- Use `peer.set_channel_count(5)` if you need more than 4 channels.
+- **Compression** → Reduces bandwidth usage for large payloads.
+- **Packet Merging** → Combine small packets into fewer transmissions (`enet_compress` in Project Settings).
+- **Custom Channel Count** → If your game needs more than 4 channels:
+```gdscript
+peer.set_channel_count(5)
+```
 
 ---
 
 ## 🔐 Security & Authority Control
 
-### **5. Authority Mode**
-Server authoritative design:
+### 5. **Authority Mode**
+- In a **server-authoritative** design, the server makes all final decisions.
+- Clients send `to_server` events for requests; server validates and executes.
+- Prevents cheating by never letting clients decide outcomes.
 
-- Only the server can trigger critical events (combat results, turn change).
-- Clients emit only `to_server` calls.
-- Validate all client events server-side before applying game logic.
+**Example:**
+```gdscript
+# Client side
+Game.to_server("request_attack", [target_id])
+
+# Server side
+func _on_request_attack(peer_id, target_id):
+    if validate_attack(peer_id, target_id):
+        Game.to_all("attack_success", [peer_id, target_id])
+```
 
 ---
 
-### **6. Prevent RPC Injection**
-Never trust `any_peer` events for sensitive actions.
-
-Use **authority mode** for:
-
-- `to_server` events.
-- Broadcast events originating from the server.
+### 6. **Prevent RPC Injection**
+- Never trust events from `any_peer` for sensitive actions.
+- Use authority checks to ensure only the server can emit critical events.
 
 ---
 
 ## 🎛 Debugging & Logging
 
-### **7. Enable Debug Mode**
-Toggle **Debug** in the EventBridge dock:
-
-- Shows toast notifications for auto-corrections.
-- Prints event mapping in the Output console.
+### 7. **Enable Debug Mode**
+- Toggle **Debug** in the EventBridge dock.
+- Enables toast notifications when events are auto-corrected.
+- Prints event mappings and RPC usage in the Output console.
 
 ---
 
-### **8. Trace Event Usage**
-Use **Connections View** in the plugin:
-
-- Displays all subscribers and emitters in the project.
-- Double-click opens the script at the exact line of usage.
+### 8. **Trace Event Usage**
+- Use **Connections View** in the plugin to see all active event subscriptions and emissions.
+- Double-click entries to jump to the exact script line.
 
 ---
 
 ## ✅ Quick Checklist
+
 ✔ Use **emit_local** for offline/local logic.  
 ✔ Use **to_server** for client → server communication.  
-✔ Validate **critical actions** on the server.  
-✔ Batch frequent updates & use `unreliable` where safe.  
-✔ Use **channels** for prioritization.  
-✔ Enable **debug mode** during development.  
+✔ Always **validate critical actions** on the server.  
+✔ Batch frequent updates & prefer `unreliable` for non-critical traffic.  
+✔ Separate **channels** by priority to prevent delays.  
+✔ Enable **debug mode** during development for better visibility.  
+
+---
+
+**Pro Tip:** Combine these strategies for maximum performance and security without sacrificing development speed.
