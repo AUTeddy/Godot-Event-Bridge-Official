@@ -1,4 +1,4 @@
-# EventBridge Developer Guide — Using the EventDock (Godot 4)
+# EventBridge Guide — Using the EventDock
 
 This guide shows you how to **configure, generate, and use events** with the **EventDock** after installing the EventBridge plugin.  
 We assume you already have a **server build running** and can connect clients.
