@@ -344,16 +344,6 @@ func _exit_tree() -> void:
 
 ---
 
-## 🧪 Testing Checklist
-
-- Server running? **Yes**
-- Registry generated and synced on all peers? **Yes**
-- Validators added for `to_server` events? **Yes**
-- Correct **transfer modes** and **channels**? **Yes**
-- Debug enabled in EventDock for toasts/logs while iterating? **Yes**
-
----
-
 ## 📝 Notes & Pitfalls
 
 - Prefer **server‑authoritative** designs. Clients **request**, server **decides** and **broadcasts**.
@@ -363,4 +353,4 @@ func _exit_tree() -> void:
 
 ---
 
-Happy shipping! 🚀
+
