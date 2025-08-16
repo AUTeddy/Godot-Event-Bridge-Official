@@ -3,8 +3,6 @@
 
 ## 📚 Overview
 
-EventBridge provides a data-driven event system with multiplayer support for Godot 4. It generates an `EventManager.gd` for easy access to events and uses an `EventBus` autoload to dispatch/replicate events across peers.
-
 ```text
 Client (EventManager API) ──► EventBus Autoload ──► RPC System ──► EventBus (Receiving Peer)
                                                                   │
@@ -17,30 +15,7 @@ Client (EventManager API) ──► EventBus Autoload ──► RPC System ─�
                             emit_signal(event_name, args)                        Block event, log warning
 ```
 
-Or as Mermaid:
 
-```mermaid
-sequenceDiagram
-    participant C as Client
-    participant EB as EventBus (Sender)
-    participant RPC as RPC System
-    participant ER as EventBus (Receiver)
-    participant EM as EventManager
-
-    C->>EB: EventManager.some_event(args)
-    EB->>RPC: rpc()/rpc_id()
-    RPC->>ER: rpc_event(ns, event, args)
-    ER->>EM: _validate_event(event, args)?
-    alt Valid
-        EM-->>ER: true
-        ER->>ER: emit_signal(event, args)
-    else Invalid
-        EM-->>ER: false
-        ER->>ER: block + warn (optional)
-    end
-```
-
----
 
 ## ✨ What’s New (Latest Update)
 
