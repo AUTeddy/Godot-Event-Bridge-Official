@@ -1,10 +1,6 @@
 
 # EventBridge Validator & Networking — Developer Guide
 
-This guide explains how **validators** integrate with EventBridge’s networking pipeline, how to **implement** them, and how to **configure transfer modes & channels** safely. It’s ready for docs sites, StackEdit, or GitHub.
-
----
-
 ## 📚 Overview
 
 EventBridge provides a data-driven event system with multiplayer support for Godot 4. It generates an `EventManager.gd` for easy access to events and uses an `EventBus` autoload to dispatch/replicate events across peers.
