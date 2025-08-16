@@ -16,29 +16,6 @@ Client (EventManager API) ──► EventBus Autoload ──► RPC System ─�
 ```
 
 
-
-## ✨ What’s New (Latest Update)
-
-- ✔ **Validation Hooks** – Security layer to block invalid or malicious events before they reach gameplay.
-- ✔ **Transfer Mode Enhancements** – `unreliable_ordered` for smooth, high‑frequency updates.
-- ✔ **Runtime Warnings** – Detect unsafe channel configurations during playtests.
-
----
-
-## 🔒 Why Validation Exists
-
-In multiplayer, clients can be compromised or simply buggy. If the server trusts all RPCs, you risk cheats and crashes.
-
-**Example risks:**
-
-- A client sends an **invalid dice roll** result.
-- A player triggers a **kick_client** event to remove others.
-- A client spams **thousands of events** to degrade performance.
-
-**Solution:** **Validators** verify incoming events **before** any game logic runs.
-
----
-
 ## 🧠 How Validators Work
 
 ### Naming Convention
@@ -77,7 +54,7 @@ EventBridge automatically calls this validator (if present) on the **receiving p
 Inside `event_bus.gd` you should perform the check before emitting:
 
 ```gdscript
-# Pseudocode/sketch — adapt to your project structure/names
+
 @rpc("any_peer", "call_local", "reliable")
 func rpc_event(ns_name: String, event_name: String, args: Array) -> void:
     # If EventManager is an autoload, it's accessible as a global
@@ -229,8 +206,6 @@ func validate_kick_client(args: Array) -> bool:
     return get_tree().is_network_server()
 ```
 
-> Because it **extends** `EventManager`, `has_method("validate_x")` will return true on the autoload instance, and your custom logic will run.
-
 ---
 
 ## 🚦 Transfer Modes & Channel Safety
@@ -267,10 +242,6 @@ Channel 0 → player_position_update (unreliable_ordered)
 Channel 1 → enemy_spawn            (reliable)
 ```
 
-**EventBridge helps you:**
-- **Dock warnings** for shared channels with risky modes.
-- **Runtime warnings** when conflicts are detected.
-
 ---
 
 ## 🧪 Testing Validators
@@ -293,15 +264,3 @@ Channel 1 → enemy_spawn            (reliable)
 | Security enforcement    | `kick_client`        | Allow only if server authority        |
 
 ---
-
-## 🔧 Developer Workflow Summary
-
-1. **Create events** in EventDock.  
-2. Assign **transfer modes** (`reliable` vs `unreliable(_ordered)`) and **channels**.  
-3. Implement **validators** for authority‑side and critical events.  
-4. **Regenerate** if you changed registry or API.  
-5. **Test** with Debug enabled and watch warnings/logs.
-
----
-
-**With validators + proper transfer configuration, EventBridge delivers both performance _and_ security for multiplayer Godot games.**
