@@ -28,11 +28,6 @@ Game.to_all("batched_positions", [updates])
   - `unreliable` or `unreliable_ordered` (when slight packet loss is acceptable).
 - Reliable mode can cause delays if a packet is lost, as all later packets wait for retransmission.
 
-**Example:**
-```gdscript
-Test.to_all_unreliable("update_position", [x, y])
-```
-
 ---
 
 ## 🌐 Networking Best Practices
@@ -47,11 +42,6 @@ Organize events by priority using **channels**:
 | **3–4** | Low-priority updates (animations, effects) |
 
 Using separate channels prevents important packets from being delayed by large, low-priority messages.
-
-**Example:**
-```gdscript
-Test.to_all("ui_sync", [data], channel=1)
-```
 
 ---
 
