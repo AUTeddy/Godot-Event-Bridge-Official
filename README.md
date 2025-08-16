@@ -56,7 +56,7 @@ Perfect for single‑player **and** multiplayer projects where raw signals/RPCs 
 
 ---
 
-## ✅ Why Choose EventBridge?
+## ✅ Why EventBridge?
 
 - **Local & Network Events** – One API for local, server, peer‑specific, or broadcast events.  
 - **Namespaces for Organization** – Keep events modular and maintainable.  
