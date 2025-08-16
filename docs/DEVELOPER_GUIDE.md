@@ -1,7 +1,7 @@
 # EventBridge Guide — Using the EventDock
 
 This guide shows you how to **configure, generate, and use events** with the **EventDock** after installing the EventBridge plugin.  
-We assume you already have a **server build running** and can connect clients.
+You should already have a **server build running** and can connect clients.
 
 ---
 
@@ -20,7 +20,7 @@ We assume you already have a **server build running** and can connect clients.
 
 ---
 
-## 🧭 The EventDock at a Glance
+## 🧭 The EventDock
 
 Open **EventDock** from the bottom panel or **Plugins** menu (depending on your setup). The dock lets you:
 - Create and organize **Namespaces** (categories) and **Events**.
@@ -279,7 +279,3 @@ if not multiplayer.is_server():
 ```gdscript
 Admin.emit_local("ui_flash", ["You have joined the lobby!"])
 ```
-
----
-
-Happy bridging! 🎮
