@@ -4,7 +4,7 @@
 This guide gives **copy‑paste ready** examples for common gameplay interactions using **EventBridge**.  
 Each recipe shows both the **manual Namespace API** and the **auto‑generated EventManager API** variants, plus **EventDock** configuration and **validator suggestions**.
 
-> Assumptions: You’ve installed the plugin, generated your registry, and your **server is running**. Clients connect to it and share the same `event_registry.json`.
+> Assumptions: You’ve installed the plugin, generated your registry, and your **server is running**.
 
 ---
 
