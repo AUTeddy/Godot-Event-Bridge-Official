@@ -47,40 +47,6 @@ EventBridge automatically calls this validator (if present) on the **receiving p
 
 > _Note:_ If your actual autoload name differs (e.g., `EventBusAutoload`), adjust accordingly.
 
----
-
-## ✅ Validator Check (in `rpc_event`)
-
-Inside `event_bus.gd` you should perform the check before emitting:
-
-```gdscript
-
-@rpc("any_peer", "call_local", "reliable")
-func rpc_event(ns_name: String, event_name: String, args: Array) -> void:
-    # If EventManager is an autoload, it's accessible as a global
-    # singleton by the name you configured in Project Settings.
-    # Example: if you autoloaded it as "EventManager", you can use it directly.
-    var ok := true
-    if "EventManager" in ProjectSettings.get_setting("autoload", {}):
-        ok = EventManager._validate_event(event_name, args)
-    elif Engine.has_singleton("EventManager"):
-        # Only if you registered it as an engine singleton (rare)
-        var em = Engine.get_singleton("EventManager")
-        ok = em._validate_event(event_name, args)
-
-    if not ok:
-        if DEBUG:
-            EventBridgeLogger.event_log("EventBus", "Blocked by validator: %s::%s" % [ns_name, event_name], 2)
-        return
-
-    # Emit only after validation
-    var signal_name := ns_name + "__" + event_name
-    if has_signal(signal_name):
-        # Forward args: callv is used to splat the array after the signal name
-        callv("emit_signal", [signal_name] + args)
-```
-
-> If you use a different mechanism to access the EventManager (e.g., `get_node("/root/EventManager")`), adapt accordingly.
 
 ---
 
