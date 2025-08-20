@@ -16,7 +16,7 @@ You should already have a **server build running** and can connect clients.
 > - Registry JSON: `res://addons/event_bridge/generated/event_registry.json`  
 > - Generated API: `res://addons/event_bridge/generated/EventManager.gd`  
 > - Data resource: `res://addons/event_bridge/generated/event_data.tres`  
-> - Logger scene (optional): `res://addons/event_bridge/event_bridge_logger.tscn`
+> - Logger scene : `res://addons/event_bridge/event_bridge_logger.tscn`
 
 ---
 
